@@ -1,0 +1,606 @@
+#+DRAWERS: HIDDEN
+
+* DONE Setup
+  CLOSED: [2014-12-24 Wed 13:45]
+  :LOGBOOK:  
+  - State "DONE"       from ""           [2014-12-24 Wed 13:45]
+  :END:      
+  - create a data directory
+  - create a file and put in it the download links
+#+begin_src sh :results verbatim raw replace   
+  projdir="$HOME/projects/2014-12-20_datascibowl/"
+  if [ -d "$projdir" ]
+  then
+    echo "$projdir exists, entering it"
+    cd "$projdir"
+  else
+    echo "making $projdir and entering it"
+    mkdir "$projdir" && cd "$_"
+  fi
+  if [-d "data"]
+  then
+    echo "data dir exists, entering it"
+    cd "data"
+  else
+    echo "creating data directory and download file list"  
+    mkdir "data" && cd "data"
+    data_download.txt
+    echo 'http://www.kaggle.com/c/datasciencebowl/download/train.zip' > data_download.txt
+    echo 'http://www.kaggle.com/c/datasciencebowl/download/test.zip' >> data_download.txt
+  fi
+#+end_src
+#+RESULTS:
+/home/joth/projects/2014-12-20_datascibowl/ exists, entering it
+creating data directory and download file list
+
+
+* DONE Get data
+  CLOSED: [2014-12-24 Wed 13:45]
+  :LOGBOOK:  
+  - State "DONE"       from ""           [2014-12-24 Wed 13:45]
+  :END:      
+#+begin_src sh silent
+  # currently doesn't work, need to export browser cookies
+  # and use wget option --load-cookies
+  # http://askubuntu.com/questions/161778/how-do-i-use-wget-curl-to-download-from-a-site-i-am-logged-into
+  # only if files in data_download dont exist
+  cd "$HOME/projects/2014-12-20_datascibowl/data"
+  wget -nv -i data_download.txt
+#+end_src
+#+RESULTS:
+
+#+begin_src sh silent
+  # again if they dont already exist, that's -n
+  cd ~/projects/2014-12-20_datascibowl/data
+  unzip -n train
+  unzip -n test
+#+end_src
+
+
+
+
+* DONE Setup packages
+  CLOSED: [2014-12-24 Wed 13:45]
+  :LOGBOOK:  
+  - State "DONE"       from ""           [2014-12-24 Wed 13:45]
+  :END:      
+  - python environment in [[http://antarch.calepin.co/setting-up-a-python-environment-in-arch-linux-basics.html][arch]]
+  - it is suggested to manage packages with the distro
+    package manager [[http://antarch.calepin.co/setting-up-a-python-environment-in-arch-linux-basics.html][see]]
+  - from the [[http://nbviewer.ipython.org/github/udibr/datasciencebowl/blob/master/141215-tutorial.ipynb][tutorial]] it looks like we need
+  - 2.7
+    - extra
+      - [X] sklearn
+      - [X] matplotlib
+      - [X] pylab
+      - [X] numpy
+      - [X] pandas
+      - [X] scipy
+      - there were some more dependencies for iptyhon, and
+        one more for a function called from the tutorials
+      - imread was one of them
+      - 
+    - defaults
+      - glob
+      - os
+      - warnings
+
+
+* DONE Ipython
+  CLOSED: [2014-12-20 Sat 22:03]
+  :LOGBOOK:  
+  - State "DONE"       from "TODO"       [2014-12-20 Sat 22:03]
+  :END:      
+  - installed in arch, had a few dependencies, some from
+    AUR I think, though that may have been for skimage
+  ~ipython2 notebook~ 
+  - opens ipython in web browser
+  - from Help can see keyboard shortcuts, and links to
+    libary documentation
+
+
+* TODO Python/Dev Stuff [2/7]
+** Base python stuff [1/1]
+*** DONE Sets and lists [[https://docs.python.org/2/tutorial/datastructures.html][builting data structures]]
+    CLOSED: [2014-12-24 Wed 20:50]
+    :LOGBOOK:  
+    - State "DONE"       from ""           [2014-12-24 Wed 20:50]
+    :END:      
+Sets are hashed iterable unorder lists of distinct items.
+#+begin_src python :results scalar org replace output  
+a = ["why'd", "you", "crisp", "greedo?"]
+set_a = set(a)
+type(a)
+type(set_a)
+
+print "List a:"
+for item in a:
+  print item
+
+print "Set a:"
+for item in set_a:
+  print item
+
+a.append(", han")
+print a
+
+set_b = (["why'd", "you", "crisp", "greedo?"])
+print set_a.difference(set_b)
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC org
+List a:
+why'd
+you
+crisp
+greedo?
+Set a:
+you
+crisp
+greedo?
+why'd
+["why'd", 'you', 'crisp', 'greedo?', ', han']
+set(['you', 'crisp', 'greedo?', "why'd"])
+#+END_SRC
+
+** TODO learn key python packages [2/6]
+   - for this i changed the python command variable in emacs
+     to use python2
+   - also must use :results output tag instead of :results
+     value, as the latter requires you return object
+*** DONE [[http://docs.scipy.org/doc/numpy/reference/][Numpy]]
+    CLOSED: [2014-12-21 Sun 21:14]
+    :LOGBOOK:  
+    - State "DONE"       from ""           [2014-12-21 Sun 21:14]
+    :END:      
+**** creating arrays
+
+#+begin_src python :results  code replace output 
+import numpy as np
+x = np.array([[1, 2, 3], [4, 5, 6]], np.int32)
+print type(x)
+print x
+print x.shape
+print x[0,1]
+print x[1,2]
+print x[:,1]
+print x[:1,]
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC python
+<type 'numpy.ndarray'>
+[[1 2 3]
+ [4 5 6]]
+(2, 3)
+2
+6
+[2 5]
+[[1 2 3]]
+#+END_SRC
+**** [[http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html#arrays-indexing][slicing]]
+     - is powerful, and slices are pointers, i.e. updating
+       their contents updates the parent object
+     - slice with array[i:j:k] where i is start index, j is
+       stop, and k int > 0 is step
+     - seems to be indexed as so
+       |---+---+---|
+       | 0 | 2 | 4 |
+       | 1 | 3 | 5 |
+       |---+---+---|
+
+#+begin_src python :results  code replace output 
+import numpy as np
+x = np.array([[1, 2, 3], [4, 5, 6]], np.int32)
+print x[1:5:2]
+print x[:,1]
+print x[:1,]
+
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC python
+[[4 5 6]]
+[2 5]
+[[1 2 3]]
+#+END_SRC
+
+**** [[http://docs.scipy.org/doc/numpy/reference/arrays.nditer.html][iteration]]
+     - 
+
+**** [[http://docs.scipy.org/doc/numpy/reference/routines.linalg.html][linalg]]
+     - 
+*** DONE [[http://docs.scipy.org/doc/numpy/reference/][Scipy]]
+    CLOSED: [2015-01-04 Sun 13:18]
+    :LOGBOOK:  
+    - State "DONE"       from "TODO"       [2015-01-04 Sun 13:18]
+    :END:      
+    - mathematical functions built on numpy
+    - read about it.
+      - stats functions,
+      - spatial data method such as delaunay triangulation,
+      - singal proc
+      - integration, ode
+    - there is a [[http://docs.scipy.org/doc/scipy/reference/tutorial/index.html][tutorial]]
+*** TODO [[http://docs.scipy.org/doc/scipy/reference/tutorial/ndimage.html][multidimensional image proc]]
+    - 
+*** TODO Pandas
+    - 
+*** TODO [[http://scikit-learn.org/stable/user_guide.html#user-guide][sci kit learn (user guide)]]
+    - the [[http://scikit-learn.org/stable/modules/linear_model.html][help section on regression]] is easy as i already
+      understand that, understanding the python part is
+      straight forward
+*** TODO sci kit image
+    - 
+
+** DONE virtual env Research
+   CLOSED: [2014-12-23 Tue 01:24] SCHEDULED: <2014-12-22 Mon>
+   :LOGBOOK:  
+   - State "DONE"       from "TODO"       [2014-12-23 Tue 01:24]
+   :END:      
+   - 
+** DONE Setting up for python development on ArchLinux
+    CLOSED: [2014-12-24 Wed 13:44]
+    :LOGBOOK:  
+    - State "DONE"       from "NEXT"       [2014-12-24 Wed 13:44]
+    - State "NEXT"       from ""           [2014-12-24 Wed 12:47]
+    :END:      
+    - References
+      - [[http://docs.python-guide.org/en/latest/dev/virtualenvs/][pydocs]]
+      - [[https://wiki.archlinux.org/index.php/Python_VirtualEnv][archwiki]]
+
+First we're going to isntall pip and virtual env, we dont
+need pip as venvs install pip into the venv when created,
+but worth getting it for shell completion.
+#+begin_src sh :noeval
+sudo pacman -S python3-pip
+sudo pacman -S python3-virtualenv
+# sudo pacman -S python2-pip
+# sudo pacman -S python2-virtualenv
+#+end_src
+
+Make pip play nice with zsh.
+#+begin_src sh
+pip completion --zsh >> ~/.zprofile
+#+end_src
+
+venvwrapper is a nubmer of shell scripts that simplify
+working with and tracking venvs. I regret it fixes the
+virtual env base path, which affects how I organize
+projects. Although venvs can be linked to [[https://virtualenvwrapper.readthedocs.org/en/latest/projects.html][project directory]]
+using mkproject, which satisfies my purposes.
+#+begin_src python :noeval
+#sudo pip install virtualenvwrapper
+sudo pacman -S python-virtualenvwrapper # can create python2 venvs
+echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.zprofile
+export WORKON_HOME=~/venvs
+export PROJECT_HOME=~/projects
+mkdir -p $WORKON_HOME
+echo "export WORKON_HOME=$WORKON_HOME" >> ~/.zprofile
+echo "export PROJECT_HOME=$PROJECT_HOME" >> ~/.zprofile
+#+end_src
+
+Head over to the project directory and setup a venv there,
+then activate it.
+#+begin_src sh :noeval
+#virtualenv -p /usr/bin/python2.7 workspace_datascibowl
+# mkvirtualenv -p /usr/bin/python2.7 2014-12-23_datascibowl
+
+# -f makes the venv even if proj exists
+mkproject -f -p /usr/bin/python2.7 2014-12-24_testdatascibowl
+
+# check out your venvs
+ls $WORKON_HOME
+#+end_src
+
+#+begin_src sh
+pip install git://github.com/yajiemiao/pdnn
+# check out packages in venv
+lssitepackages
+#+end_src
+
+~deactivate~ deactivates the current venv. And can also
+navigate to the active venv with ~cdvirtualenv~.
+
+** TODO Settung up python dev on ArchLinux v2
+   - missed the point, mkproject not working, it's putting
+     the venv in the project dir instead of the $WORKON_HOME
+   - so how to do this? just make the venv and then
+     associate it with a project dir?
+** TODO Hu central moment expirimentation [0/3]
+*** Features [1/2]
+   - [X] try using moments 2-6, I htink 1-7 are not as
+     meaninful
+     - no better
+   - [ ] try permutation of the central moments combinations
+
+*** Tests [0/1]
+   - [ ] try manually doing the central moments on a trivial
+     image to test the reflect, translation, rotation
+     invariance
+
+** TODO DNN
+   :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2014-12-22 Mon 22:43]
+   :END:      
+   - theano, try that
+   - clone the repo into the venv project dir, load up
+     module and run tests
+   - leaving it to bert
+*** [[http://deeplearning.net/software/theano/install.html][Installing theano]]
+    - 
+
+** [[https://docs.python.org/2/library/pickle.html][Pickle]] for saving python objects
+   - saving python objects
+** TODO model infrastructure
+   - how can we optimize the iteration
+   - save intermediate models
+   - for bert
+** Write a class for this? work with bert
+   - ugh, i like the functional/R paradigm of methods belong
+     to functions! this hurts my brain
+   - inside venv we shoudl have all we need to work on it,
+     including the data and libraries
+   - class is datascibowl
+   - attributes
+     - training classes
+       - nested dict with names of classes/subclasses?
+   - methods
+     - scale image
+     - calculate feature
+     - preprocess
+     - 
+
+
+* TODO ML Stuff [1/9]
+** NEXT Understand the error/performance measure better
+   - 
+
+** CANCELLED make a uniform probability prediction
+   SCHEDULED: [2014-12-26 Fri]
+   :LOGBOOK:  
+   - State "CANCELLED"  from "NEXT"       [2015-01-04 Sun 12:39] \\
+     trivial
+   - Rescheduled from "2014-12-22 Mon" on [2014-12-25 Thu 16:29]
+   - State "NEXT"       from "TODO"       [2014-12-21 Sun 21:13]
+   :END:      
+   The idea here is just to learn a bit more about the data
+   manipulations, processing, etc in python.
+   Cancelled - trivial.
+*** data
+    - submission of form
+    | imagefilename | class1 prob | class2 prob | ... | classn prob |
+    | 1.jpg         | 1/n         | 1/n         | 1/n | 1/n         | 
+  
+** DONE Check the kaggle handwriting competition example
+   CLOSED: [2015-01-04 Sun 12:39] SCHEDULED: <2014-12-26 Fri>
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-01-04 Sun 12:39]
+   - State "NEXT"       from "TODO"       [2014-12-25 Thu 16:25]
+   :END:      
+   - bert thinks may be some inspiration here
+   - I am not seeing much other than tutorial/info on RF
+     classifier
+   - RF decision trees
+** TODO Preprocessing
+   - we have to identify our features, at the same time as
+     not introducing some censorship of the dater
+   - tutorial uses
+     - thresholding on mean to reduce noise
+     - dilate to connect neighboring pixels
+     - segmention of connection regions - calculate their
+       labels (e.g. region 1,2,3)
+     - apply the labels to original images
+*** TODO check prportion of obs with maxRegion [/]
+    - when no maxregion, axis region ratio is 0, same with
+      hu centres for now
+    - [ ] get the proportion which are 0
+** TODO feature brainstorming
+   - Recall, manual feature selection is a difficult
+     endeavour, rather search the feature space and have a
+     generalization to create features, e.g. hu moments and
+     thier interactions
+   - aspect ratio
+   - eccentricity
+   - something about the protrusions
+   - how about degree of transparency/variance of pixel
+     values in feature
+   - most of these i reckon are captured by the hu moments
+*** DONE hu central moments Research
+    CLOSED: [2015-01-04 Sun 21:14] SCHEDULED: <2014-12-25 Thu>
+    :LOGBOOK:  
+    - State "DONE"       from ""           [2015-01-04 Sun 21:14]
+    :END:      
+    - and see [[Hu%20central%20moment%20expirimentation][Hu central moment expirimentation]] for tests to
+      try
+    - see the wiki [[http://en.wikipedia.org/wiki/Image_moment][here]]
+    - image moments are certain averages of image pixel
+      intensities, and functions of such first moments
+    - this is defined for discrete greyscale data as
+
+\begin{equation}
+  M_{ij} = \sum_x \sum_y x^i y^j I(x,y)
+\end{equation}
+
+    - they usually are formulated to have an attractive
+      property, e.g. the hu central moments are rotation,
+      translation
+
+:HIDDEN:
+\begin{equation}
+   I_1 = \eta_{20} + \eta_{02}
+\end{equation}
+\begin{equation}
+   I_2 = (\eta_{20} - \eta_{02})^2 + 4\eta_{11}^2
+\end{equation}
+\begin{equatio}
+   I_3 = (\eta_{30} - 3\eta_{12})^2 + (3\eta_{21} - \eta_{03})^2
+\end{equation}
+\begin{equatio}
+   I_4 = (\eta_{30} + \eta_{12})^2 + (\eta_{21} + \eta_{03})^2
+\end{equation}
+\begin{equatio}
+   I_5 = (\eta_{30} - 3\eta_{12}) (\eta_{30} + \eta_{12})[ (\eta_{30} + \eta_{12})^2 - 3 (\eta_{21} + \eta_{03})^2] + (3 \eta_{21} - \eta_{03}) (\eta_{21} + \eta_{03})[ 3(\eta_{30} + \eta_{12})^2 -  (\eta_{21} + \eta_{03})^2]
+\end{equation}
+\begin{equatio}
+   I_6 =  (\eta_{20} - \eta_{02})[(\eta_{30} + \eta_{12})^2 - (\eta_{21} + \eta_{03})^2] + 4\eta_{11}(\eta_{30} + \eta_{12})(\eta_{21} + \eta_{03})
+\end{equation}
+\begin{equatio}
+   I_7 = (3 \eta_{21} - \eta_{03})(\eta_{30} + \eta_{12})[(\eta_{30} + \eta_{12})^2 - 3(\eta_{21} + \eta_{03})^2] - (\eta_{30} - 3\eta_{12})(\eta_{21} + \eta_{03})[3(\eta_{30} + \eta_{12})^2 - (\eta_{21} + \eta_{03})^2].
+\end{equation}
+:END:
+
+   - how does this transfer to image/pattern recognition?
+     Any image can be represented as a density function in
+     x,y, which can further be represented by these moments.
+     these moments should be invariant with respect to the
+     images position in the visual field and pattern size.
+   - so *why* does the python method for getting these
+     moments take a region centroid? maybe it's to mask out
+     parts of the image, but in this case, where the rest of
+     the image is blank, I don't see it mattering
+   - so, of these moments, 7 may be bad as it represents
+     reflected images, and 1, the centroid, I don't think is
+     pertinent
+   - what of the others? the original [[http://www.sci.utah.edu/~gerig/CS7960-S2010/handouts/Hu.pdf][ieee transactions]]
+     document
+   - regardless, my question is, if i add crappy features,
+     why is the classifier using them and scoring so
+     poorly?!
+
+** TODO different models than RF
+** TODO model fitting
+   - remember, the feature array is just a matrix where the
+     features are some function/measure of the image
+   | class | feature 1 | feature 2 | ... | feature m |
+   |       |           |           |     |           |
+*** TODO RF [0/1]
+    - [ ] why is the classifier using features that give it
+      lower performance?! i.e. eccentricity ratio is good,
+      naive hu is good, but region centred HU with 0s or
+      naive hu for None largest regions sucks!
+** TODO *nested model* 
+   - There are many families of plankton, and there is some
+     similarity with sub classes, can we capture this
+   - Some of the subclasses are even the same as others, but
+     from different views
+     - e.g. hydromedusae partial dark vs ShapeA
+     - but we still have to predict each class as given in
+       the folders
+** TODO Different number of samples per class
+   - shall we predict smaller samples classes with less
+     confidence?
+
+
+* TODO Blog topics
+** feature vs model selection
+I tried a few features, with unexpected (poor) and otherwise
+insignificant impact on the model performance
+
+Lets consider something, about toying with features. 
+
+#+begin_src python :results output
+# https://docs.python.org/2/library/itertools.html#itertools.combinations
+import itertools as iter
+
+def count_iterable(i):
+    return sum(1 for e in i)
+
+num_vars = [x for x in range(10)]
+num_combinations = {}
+
+for vars in num_vars:
+    var_list = [var for var in range(vars)]
+    num_combinations[vars] = 0
+    for subsets in [y for y in var_list]:
+        combinations = iter.combinations(var_list, subsets)
+        num_combinations[vars] += count_iterable(combinations)
+
+print num_combinations
+#+end_src
+
+#+RESULTS:
+: {0: 0, 1: 1, 2: 3, 3: 7, 4: 15, 5: 31, 6: 63, 7: 127, 8: 255, 9: 511}
+
+There we have it, even 4 or 5 features, playing with them
+manually becomes unruly.
+
+With regression, we have some feature selection estimators,
+i.e. lasso.
+
+What about classification... decision trees should only use
+the optimal split. But they'll use some split even if
+there's not a good one.
+
+So, is it more effective to begin already with the model
+search? Or do we have to search the feature model space?
+
+This already highlights the difficulty with lacking domain
+knowledge. For the driver telematics I have a much better
+chance and specifying a pretty full feature space, but for
+plankton ID and image processing, where I know so little...
+sheesh.
+
+So, From here, given my efforts in toying with features have
+been unsuccessful, my focus goes towards trying different
+models and their parameter space. Then perhaps some progress
+can be made here.
+** hu central moments Research
+   - copied from above
+   - and see [[Hu%20central%20moment%20expirimentation][Hu central moment expirimentation]] for tests to
+     try
+   - see the wiki [[http://en.wikipedia.org/wiki/Image_moment][here]]
+   - image moments are certain averages of image pixel
+     intensities, and functions of such first moments
+   - this is defined for discrete greyscale data as
+
+\begin{equation}
+  M_{ij} = \sum_x \sum_y x^i y^j I(x,y)
+\end{equation}
+
+   - they usually are formulated to have an attractive
+     property, e.g. the hu central moments are rotation,
+     translation
+
+:HIDDEN:
+\begin{equation}
+   I_1 = \eta_{20} + \eta_{02}
+\end{equation}
+\begin{equation}
+   I_2 = (\eta_{20} - \eta_{02})^2 + 4\eta_{11}^2
+\end{equation}
+\begin{equatio}
+   I_3 = (\eta_{30} - 3\eta_{12})^2 + (3\eta_{21} - \eta_{03})^2
+\end{equation}
+\begin{equatio}
+   I_4 = (\eta_{30} + \eta_{12})^2 + (\eta_{21} + \eta_{03})^2
+\end{equation}
+\begin{equatio}
+   I_5 = (\eta_{30} - 3\eta_{12}) (\eta_{30} + \eta_{12})[ (\eta_{30} + \eta_{12})^2 - 3 (\eta_{21} + \eta_{03})^2] + (3 \eta_{21} - \eta_{03}) (\eta_{21} + \eta_{03})[ 3(\eta_{30} + \eta_{12})^2 -  (\eta_{21} + \eta_{03})^2]
+\end{equation}
+\begin{equatio}
+   I_6 =  (\eta_{20} - \eta_{02})[(\eta_{30} + \eta_{12})^2 - (\eta_{21} + \eta_{03})^2] + 4\eta_{11}(\eta_{30} + \eta_{12})(\eta_{21} + \eta_{03})
+\end{equation}
+\begin{equatio}
+   I_7 = (3 \eta_{21} - \eta_{03})(\eta_{30} + \eta_{12})[(\eta_{30} + \eta_{12})^2 - 3(\eta_{21} + \eta_{03})^2] - (\eta_{30} - 3\eta_{12})(\eta_{21} + \eta_{03})[3(\eta_{30} + \eta_{12})^2 - (\eta_{21} + \eta_{03})^2].
+\end{equation}
+:END:
+
+   - how does this transfer to image/pattern recognition?
+     Any image can be represented as a density function in
+     x,y, which can further be represented by these moments.
+     these moments should be invariant with respect to the
+     images position in the visual field and pattern size.
+   - so *why* does the python method for getting these
+     moments take a region centroid? maybe it's to mask out
+     parts of the image, but in this case, where the rest of
+     the image is blank, I don't see it mattering
+   - so, of these moments, 7 may be bad as it represents
+     reflected images, and 1, the centroid, I don't think is
+     pertinent
+   - what of the others? the original [[http://www.sci.utah.edu/~gerig/CS7960-S2010/handouts/Hu.pdf][ieee transactions]]
+     document
+   - regardless, my question is, if i add crappy features,
+     why is the classifier using them and scoring so
+     poorly?!

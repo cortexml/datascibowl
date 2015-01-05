@@ -1,0 +1,2 @@
+http://www.kaggle.com/c/datasciencebowl/download/train.zip
+http://www.kaggle.com/c/datasciencebowl/download/test.zip
