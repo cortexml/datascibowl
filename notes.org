@@ -99,7 +99,7 @@ creating data directory and download file list
     libary documentation
 
 
-* TODO Python/Dev Stuff [2/7]
+* TODO Python/Dev Stuff [2/8]
 ** Base python stuff [1/1]
 *** DONE Sets and lists [[https://docs.python.org/2/tutorial/datastructures.html][builting data structures]]
     CLOSED: [2014-12-24 Wed 20:50]
@@ -144,7 +144,7 @@ why'd
 set(['you', 'crisp', 'greedo?', "why'd"])
 #+END_SRC
 
-** TODO learn key python packages [2/6]
+** TODO learn key python packages [3/6]
    - for this i changed the python command variable in emacs
      to use python2
    - also must use :results output tag instead of :results
@@ -224,13 +224,19 @@ print x[:1,]
       - integration, ode
     - there is a [[http://docs.scipy.org/doc/scipy/reference/tutorial/index.html][tutorial]]
 *** TODO [[http://docs.scipy.org/doc/scipy/reference/tutorial/ndimage.html][multidimensional image proc]]
-    - 
+    - i dont think
+    - relevant for snodrofo
 *** TODO Pandas
     - 
-*** TODO [[http://scikit-learn.org/stable/user_guide.html#user-guide][sci kit learn (user guide)]]
+*** DONE [[http://scikit-learn.org/stable/user_guide.html#user-guide][sci kit learn (user guide)]]
+    CLOSED: [2015-01-06 Tue 08:36]
+    :LOGBOOK:  
+    - State "DONE"       from "TODO"       [2015-01-06 Tue 08:36]
+    :END:      
     - the [[http://scikit-learn.org/stable/modules/linear_model.html][help section on regression]] is easy as i already
       understand that, understanding the python part is
       straight forward
+    - and the [[http://scikit-learn.org/stable/tutorial/machine_learning_map/index.html][algorithm map]] is very useful
 *** TODO sci kit image
     - 
 
@@ -303,19 +309,25 @@ lssitepackages
 ~deactivate~ deactivates the current venv. And can also
 navigate to the active venv with ~cdvirtualenv~.
 
-** TODO Settung up python dev on ArchLinux v2
+** NEXT Settung up python dev on ArchLinux v2
+   :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2015-01-06 Tue 08:34]
+   :END:      
    - missed the point, mkproject not working, it's putting
      the venv in the project dir instead of the $WORKON_HOME
    - so how to do this? just make the venv and then
      associate it with a project dir?
-** TODO Hu central moment expirimentation [0/3]
-*** Features [1/2]
+** TODO Hu central moment expirimentation [0/2]
+*** TODO Features [1/2]
    - [X] try using moments 2-6, I htink 1-7 are not as
      meaninful
      - no better
    - [ ] try permutation of the central moments combinations
 
-*** Tests [0/1]
+*** NEXT Tests [0/1]
+    :LOGBOOK:  
+    - State "NEXT"       from ""           [2015-01-06 Tue 08:35]
+    :END:      
    - [ ] try manually doing the central moments on a trivial
      image to test the reflect, translation, rotation
      invariance
@@ -331,12 +343,20 @@ navigate to the active venv with ~cdvirtualenv~.
 *** [[http://deeplearning.net/software/theano/install.html][Installing theano]]
     - 
 
-** [[https://docs.python.org/2/library/pickle.html][Pickle]] for saving python objects
+** TODO [[https://docs.python.org/2/library/pickle.html][Pickle]] for saving python objects
    - saving python objects
-** TODO model infrastructure
+*** NEXT test pickle
+    :LOGBOOK:  
+    - State "NEXT"       from ""           [2015-01-06 Tue 08:35]
+    :END:      
+#+begin_src python :noeval
+
+#+end_src
+
+** model infrastructure
    - how can we optimize the iteration
-   - save intermediate models
-   - for bert
+   - save intermediate models with pickle
+   - bert is doing this
 ** Write a class for this? work with bert
    - ugh, i like the functional/R paradigm of methods belong
      to functions! this hurts my brain
@@ -561,7 +581,7 @@ can be made here.
 
    - they usually are formulated to have an attractive
      property, e.g. the hu central moments are rotation,
-     translation
+     translation, reflection?
 
 :HIDDEN:
 \begin{equation}
@@ -604,3 +624,12 @@ can be made here.
    - regardless, my question is, if i add crappy features,
      why is the classifier using them and scoring so
      poorly?!
+** python vs R
+   |-------------------+------------------+---------------------------|
+   | R                 | python           | notes                     |
+   |-------------------+------------------+---------------------------|
+   | dynamically typed | statically typed |                           |
+   | caret             | scikitlearn      | sklearn better API        |
+   | functional        | object oriented  | in the sense that methods |
+   |                   |                  | belong to functions in R  |
+   |                   |                  |                           |
