@@ -70,7 +70,7 @@ creating data directory and download file list
     libary documentation
 
 
-* TODO Python/Dev Stuff [5/10]
+* TODO Python/Dev Stuff [8/13]
 ** DONE Setup packages
    CLOSED: [2014-12-24 Wed 13:45]
    :LOGBOOK:  
@@ -236,8 +236,84 @@ cat $WORKON_HOME/2014-12-20_datascibowl/requirements.txt
    - jinja2
    - tornado
 
-** TODO Base python stuff [1/1]
-*** DONE Sets and lists [[https://docs.python.org/2/tutorial/datastructures.html][builting data structures]]
+** DONE [[https://docs.python.org/2/library/pickle.html][Pickle]] for saving python binary objects 
+   CLOSED: [2015-01-09 Fri 21:18]
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-01-09 Fri 21:18]
+   - State "NEXT"       from "TODO"       [2015-01-06 Tue 13:49]
+   - State "NEXT"       from "TODO"       [2015-01-06 Tue 13:37]
+   :END:      
+*** why pickle?
+    Pickle lets you make persistent python objects.
+    Intermediate results, such as feature matrices and model
+    objects, may be costly to compute. It is often useful
+    then to save them. This may also aid reproduction.
+    Pickle allows for this by converting python objects to
+    byte streams.
+
+*** what can pickle do?
+    Pickle pickles (serializes) python objects into byte
+    streams. It also unpicks (or unserializes) them, i.e.
+    the byte stream is loaded back into a python object. The
+    byte streams can be saved to persistent storage, in a
+    database, or transmitted over a network.
+
+    If you know the nitty gritty send me a link at the
+    contact page, twitter, or leave a comment.
+
+*** What can't be pickled?
+    Generally speaking, classes, functions, and methods. 
+
+*** how to use it?
+    For pickling (unpickling), create a pickle object and
+    call its dump (load) method with a file connection.
+
+#+begin_src python :results none  
+import pickle
+
+wrc_champions = {
+  "Sebastien Loeb": [i+2004 for i in range(9)],
+  "Juha Kankkunen": [1986,1987,1991,1993]
+}
+
+with open("wrc_champions.p", "w") as f:
+  pickle.dump(wrc_champions, f)
+
+#+end_src
+
+
+
+#+begin_src python :results verbatim org replace output 
+import pickle
+import pprint
+import os
+with open("wrc_champions.p") as f:
+  wrc_champions = pickle.load(f)
+
+pprint.pprint(wrc_champions)
+os.remove("wrc_champions.p")
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC org
+{'Juha Kankkunen': [1986, 1987, 1991, 1993],
+ 'Sebastien Loeb': [2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012]}
+#+END_SRC
+
+*** cPickle
+    The cPickle module has Pickler and Unpickler methods,
+    which are up to 1000 times faster than the Pickle
+    counterparts. I wonder what the limitations are to that.
+    Although, cPickle ones can't be [[https://docs.python.org/2/library/pickle.html#pickle-sub][subclassed]], they suit
+    most common purposes. There are [[https://wiki.python.org/moin/UsingPickle][other reasons]] to stick
+    with pickle, though.
+
+*** Caveats (Carrots?)
+    Dont eat pickles from untrusted sources, arbitrary
+    python code can be executed in unpickling! Found [[https://wiki.python.org/moin/UsingPickle][here]],
+    along with more pertinents.
+
+** DONE Sets and lists [[https://docs.python.org/2/tutorial/datastructures.html][builting data structures]]
     CLOSED: [2014-12-24 Wed 20:50]
     :LOGBOOK:  
     - State "DONE"       from ""           [2014-12-24 Wed 20:50]
@@ -279,6 +355,18 @@ why'd
 ["why'd", 'you', 'crisp', 'greedo?', ', han']
 set(['you', 'crisp', 'greedo?', "why'd"])
 #+END_SRC
+** DONE list comprehensions
+   CLOSED: [2015-01-09 Fri 21:21]
+   :LOGBOOK:  
+   - State "DONE"       from "TODO"       [2015-01-09 Fri 21:21]
+   :END:      
+   - did an online python tutorial
+   - dont even remember why!
+** NEXT [[https://wiki.python.org/moin/Generators][generators]]
+   :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2015-01-09 Fri 21:21]
+   :END:      
+   
 ** TODO learn key python packages [2/6]
    - for this i changed the python command variable in emacs
      to use python2
@@ -368,10 +456,19 @@ print x[:1,]
       - singal proc
       - integration, ode
     - there is a [[http://docs.scipy.org/doc/scipy/reference/tutorial/index.html][tutorial]]
-*** TODO [[http://docs.scipy.org/doc/scipy/reference/tutorial/ndimage.html][multidimensional image proc]]
+*** NEXT [[http://docs.scipy.org/doc/scipy/reference/tutorial/ndimage.html][multidimensional image proc]]
+    :LOGBOOK:  
+    - State "NEXT"       from "TODO"       [2015-01-09 Fri 21:22]
+    - State "NEXT"       from "TODO"       [2015-01-09 Fri 21:22]
+    - State "NEXT"       from "TODO"       [2015-01-09 Fri 21:22]
+    - State "NEXT"       from "TODO"       [2015-01-09 Fri 21:21]
+    :END:      
     - i dont think
     - relevant for snodrofo
-*** TODO Pandas
+*** NEXT Pandas
+    :LOGBOOK:  
+    - State "NEXT"       from "TODO"       [2015-01-09 Fri 21:22]
+    :END:      
     - 
 *** DONE [[http://scikit-learn.org/stable/user_guide.html#user-guide][sci kit learn (user guide)]]
     CLOSED: [2015-01-06 Tue 08:36]
@@ -382,7 +479,10 @@ print x[:1,]
       understand that, understanding the python part is
       straight forward
     - and the [[http://scikit-learn.org/stable/tutorial/machine_learning_map/index.html][algorithm map]] is very useful
-*** TODO sci kit image
+*** NEXT sci kit image
+    :LOGBOOK:  
+    - State "NEXT"       from "TODO"       [2015-01-09 Fri 21:22]
+    :END:      
     - 
 ** TODO Hu central moment expirimentation [0/2]
 *** TODO Features [1/2]
@@ -409,86 +509,14 @@ print x[:1,]
    - leaving it to bert
 *** [[http://deeplearning.net/software/theano/install.html][Installing theano]]
     - 
-
-** NEXT [[https://docs.python.org/2/library/pickle.html][Pickle]] for saving python binary objects 
+** NEXT ML procedure
    :LOGBOOK:  
-   - State "NEXT"       from "TODO"       [2015-01-06 Tue 13:49]
-   - State "NEXT"       from "TODO"       [2015-01-06 Tue 13:37]
+   - State "NEXT"       from ""           [2015-01-09 Fri 22:52]
    :END:      
-*** why pickle?
-    Pickle lets you make persistent python objects.
-    Intermediate results, such as feature matrices and model
-    objects, may be costly to compute. It is often useful
-    then to save them. This may also aid reproduction.
-    Pickle allows for this by converting python objects to
-    byte streams.
-
-*** what can pickle do?
-    Pickle pickles (serializes) python objects into byte
-    streams. It also unpicks (or unserializes) them, i.e.
-    the byte stream is loaded back into a python object. The
-    byte streams can be saved to persistent storage, in a
-    database, or transmitted over a network.
-
-    If you know the nitty gritty send me a link at the
-    contact page, twitter, or leave a comment.
-
-*** What can't be pickled?
-    Generally speaking, classes, functions, and methods. 
-
-*** how to use it?
-    For pickling (unpickling), create a pickle object and
-    call its dump (load) method with a file connection.
-
-#+begin_src python :results none  
-import pickle
-
-wrc_champions = {
-  "Sebastien Loeb": [i+2004 for i in range(9)],
-  "Juha Kankkunen": [1986,1987,1991,1993]
-}
-
-with open("wrc_champions.p", "w") as f:
-  pickle.dump(wrc_champions, f)
-
-#+end_src
-
-
-
-#+begin_src python :results verbatim org replace output 
-import pickle
-import pprint
-import os
-with open("wrc_champions.p") as f:
-  wrc_champions = pickle.load(f)
-
-pprint.pprint(wrc_champions)
-os.remove("wrc_champions.p")
-#+end_src
-
-#+RESULTS:
-#+BEGIN_SRC org
-{'Juha Kankkunen': [1986, 1987, 1991, 1993],
- 'Sebastien Loeb': [2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012]}
-#+END_SRC
-
-*** cPickle
-    The cPickle module has Pickler and Unpickler methods,
-    which are up to 1000 times faster than the Pickle
-    counterparts. I wonder what the limitations are to that.
-    Although, cPickle ones can't be [[https://docs.python.org/2/library/pickle.html#pickle-sub][subclassed]], they suit
-    most common purposes. There are [[https://wiki.python.org/moin/UsingPickle][other reasons]] to stick
-    with pickle, though.
-
-*** Caveats (Carrots?)
-    Dont eat pickles from untrusted sources, arbitrary
-    python code can be executed in unpickling! Found [[https://wiki.python.org/moin/UsingPickle][here]],
-    along with more pertinents.
-** ML procedure
    - read data
-   - save pickled raw data
+   - save pickled raw data? maybe with cpickle
    - calculate features and create descriptive stats on them
-   - save features
+   - save feature matrices
    - fit models
 ** model infrastructure
    - how can we optimize the iteration
@@ -548,7 +576,10 @@ os.remove("wrc_champions.p")
      - segmention of connection regions - calculate their
        labels (e.g. region 1,2,3)
      - apply the labels to original images
-*** TODO check prportion of obs with maxRegion [/]
+*** NEXT check prportion of obs with maxRegion [/]
+    :LOGBOOK:  
+    - State "NEXT"       from "TODO"       [2015-01-09 Fri 22:52]
+    :END:      
     - when no maxregion, axis region ratio is 0, same with
       hu centres for now
     - [ ] get the proportion which are 0
@@ -632,6 +663,7 @@ os.remove("wrc_champions.p")
     - [[http://scikit-learn.org/stable/modules/feature_extraction.html#image-feature-extraction][link to image feat extr section]] on scikitlearn feat
       extr page
 ** TODO different models than RF
+   - 
 ** TODO model fitting
    - remember, the feature array is just a matrix where the
      features are some function/measure of the image
