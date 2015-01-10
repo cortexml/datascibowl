@@ -57,8 +57,6 @@ creating data directory and download file list
 #+end_src
 
 
-
-
 * DONE Ipython
   CLOSED: [2014-12-20 Sat 22:03]
   :LOGBOOK:  
@@ -417,14 +415,75 @@ print x[:1,]
    - State "NEXT"       from "TODO"       [2015-01-06 Tue 13:49]
    - State "NEXT"       from "TODO"       [2015-01-06 Tue 13:37]
    :END:      
-   - why save objets?
-   - what can pickle do?
-   - how to use it?
-   - saving python objects
-#+begin_src python :noeval
+*** why pickle?
+    Pickle lets you make persistent python objects.
+    Intermediate results, such as feature matrices and model
+    objects, may be costly to compute. It is often useful
+    then to save them. This may also aid reproduction.
+    Pickle allows for this by converting python objects to
+    byte streams.
+
+*** what can pickle do?
+    Pickle pickles (serializes) python objects into byte
+    streams. It also unpicks (or unserializes) them, i.e.
+    the byte stream is loaded back into a python object. The
+    byte streams can be saved to persistent storage, in a
+    database, or transmitted over a network.
+
+    If you know the nitty gritty send me a link at the
+    contact page, twitter, or leave a comment.
+
+*** What can't be pickled?
+    Generally speaking, classes, functions, and methods. 
+
+*** how to use it?
+    For pickling (unpickling), create a pickle object and
+    call its dump (load) method with a file connection.
+
+#+begin_src python :results none  
+import pickle
+
+wrc_champions = {
+  "Sebastien Loeb": [i+2004 for i in range(9)],
+  "Juha Kankkunen": [1986,1987,1991,1993]
+}
+
+with open("wrc_champions.p", "w") as f:
+  pickle.dump(wrc_champions, f)
 
 #+end_src
 
+
+
+#+begin_src python :results verbatim org replace output 
+import pickle
+import pprint
+import os
+with open("wrc_champions.p") as f:
+  wrc_champions = pickle.load(f)
+
+pprint.pprint(wrc_champions)
+os.remove("wrc_champions.p")
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC org
+{'Juha Kankkunen': [1986, 1987, 1991, 1993],
+ 'Sebastien Loeb': [2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012]}
+#+END_SRC
+
+*** cPickle
+    The cPickle module has Pickler and Unpickler methods,
+    which are up to 1000 times faster than the Pickle
+    counterparts. I wonder what the limitations are to that.
+    Although, cPickle ones can't be [[https://docs.python.org/2/library/pickle.html#pickle-sub][subclassed]], they suit
+    most common purposes. There are [[https://wiki.python.org/moin/UsingPickle][other reasons]] to stick
+    with pickle, though.
+
+*** Caveats (Carrots?)
+    Dont eat pickles from untrusted sources, arbitrary
+    python code can be executed in unpickling! Found [[https://wiki.python.org/moin/UsingPickle][here]],
+    along with more pertinents.
 ** ML procedure
    - read data
    - save pickled raw data
