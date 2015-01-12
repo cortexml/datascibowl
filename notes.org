@@ -538,7 +538,461 @@ print x[:1,]
      - 
 
 
+* TODO pylearn 2 convolutional neural networks
+** TODO setup pylearn 2 dependencies [2/3]
+   - [[http://deeplearning.net/software/pylearn2/#dependencies][pylearn 2 deps docs]]
+
+*** DONE theano, might want bleeding edge
+    CLOSED: [2015-01-11 Sun 12:58]
+    :LOGBOOK:  
+    - State "DONE"       from "NEXT"       [2015-01-11 Sun 12:58]
+    - State "NEXT"       from "DONE"       [2015-01-11 Sun 12:58]
+    :END:      
+     - [[http://deeplearning.net/software/theano/install.html#bleeding-edge-install-instructions][install with pip]]
+     - [X] run tests
+#+begin_src python :noeval
+import theano
+theano.test()
+#+end_src
+     - I'm getting issues with the nosetest. S and K instead
+       of '.'. What are these? Can't find in docs.
+     - S is skip.
+     - K is knownfail.
+
+*** DONE PyYAML
+    CLOSED: [2015-01-11 Sun 13:19]
+    :LOGBOOK:  
+    - State "DONE"       from "NEXT"       [2015-01-11 Sun 13:19]
+    - State "NEXT"       from "TODO"       [2015-01-11 Sun 13:00]
+    :END:      
+#+begin_src sh :noeval
+pip install PyYAML
+#+end_src
+
+*** NEXT PIL for some image related functionality
+    :LOGBOOK:  
+    - State "NEXT"       from "TODO"       [2015-01-11 Sun 13:20]
+    :END:      
+    - 
+** DONE install pylearn2
+   CLOSED: [2015-01-11 Sun 13:40]
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-01-11 Sun 13:40]
+   - State "NEXT"       from ""           [2015-01-11 Sun 13:36]
+   :END:      
+   - clone from github
+   - in venv 
+#+begin_src python:noeval
+python setup.py develop
+#+end_src
+
+** DONE [[https://github.com/zygmuntz/pylearn2-practice][first tutorial pylearn2 in practice]]
+   CLOSED: [2015-01-11 Sun 13:58]
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-01-11 Sun 13:58]
+   - State "NEXT"       from ""           [2015-01-11 Sun 13:03]
+   :END:      
+   - https://github.com/zygmuntz/pylearn2-practice
+   - it ran. that was just to verify it works!
+** DONE setup environment vars
+   CLOSED: [2015-01-11 Sun 14:16]
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-01-11 Sun 14:16]
+   - State "NEXT"       from ""           [2015-01-11 Sun 13:00]
+   :END:      
+   These are used for some tutorials and test.
+
+#+begin_src sh :noeval
+export PYLEARN2_DATA_PATH=/data/lisa/data
+export PATH=$PATH:???/pylearn2/scripts
+#+end_src
+
+** NEXT [[http://nbviewer.ipython.org/github/lisa-lab/pylearn2/blob/master/pylearn2/scripts/tutorials/convolutional_network/convolutional_network.ipynb][mnist tutorial]]
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-01-11 Sun 13:00]
+   :END:      
+   - ok, we know that pylearn2 is working. it'd be good to
+     go through the minst tutorial and get to grips with the
+     more complex yaml/data.
+   - get mnist
+
+** NEXT Build new requirements.txt
+   :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2015-01-11 Sun 14:15]
+   :END:      
+   - 
+
+** TODO setup pylearn2 for our data [1/5]
+*** DONE Overview of setting up expiriment 
+    CLOSED: [2015-01-11 Sun 14:42]
+    :LOGBOOK:  
+    - State "DONE"       from "NEXT"       [2015-01-11 Sun 14:42]
+    - State "NEXT"       from ""           [2015-01-11 Sun 14:28]
+    :END:      
+ [[http://deeplearning.net/software/pylearn2/yaml_tutorial/index.html#yaml-tutorial][guide]]
+
+Pylearn2 expiriments are python objects of the type
+pylearn2.train.Train. 
+
+- a *dataset*, of type pylearn2.datasets.dataset.Dataset
+- a *model*, of type pylearn2.models.model.Model
+- a *training algorithm*, of type
+  pylearn2.training_algorithms.training_algorithm.TrainingAlgorithm
+
+They are setup via a yaml configuration file such as this:
+
+:HIDDEN:
+```
+!obj:pylearn2.train.Train {
+    "dataset": !obj:pylearn2.datasets.dense_design_matrix.DenseDesignMatrix &dataset {
+        "X" : !obj:numpy.random.normal { 'size':[5,3] },
+    },
+    "model": !obj:pylearn2.models.autoencoder.DenoisingAutoencoder {
+        "nvis" : 3,
+        "nhid" : 4,
+        "irange" : 0.05,
+        "corruptor": !obj:pylearn2.corruption.BinomialCorruptor {
+            "corruption_level": 0.5,
+        },
+        "act_enc": "tanh",
+        "act_dec": null,    # Linear activation on the decoder side.
+    },
+    "algorithm": !obj:pylearn2.training_algorithms.sgd.SGD {
+        "learning_rate" : 1e-3,
+        "batch_size" : 5,
+        "monitoring_dataset" : *dataset,
+        "cost" : !obj:pylearn2.costs.autoencoder.MeanSquaredReconstructionError {},
+        "termination_criterion" : !obj:pylearn2.termination_criteria.EpochCounter {
+            "max_epochs": 1,
+        },
+    },
+    "save_path": "./garbage.pkl"
+}
+```
+:END:
+
+It's clear we need to setup each of these components.
+
+*** NEXT vincent domoulin tutorial
+    :LOGBOOK:  
+    - State "NEXT"       from ""           [2015-01-11 Sun 16:34]
+    :END:      
+    - http://vdumoulin.github.io/articles/extending-pylearn2/
+*** NEXT Dataset
+    :LOGBOOK:  
+    - State "NEXT"       from ""           [2015-01-11 Sun 14:41]
+    :END:      
+The data needs to be setup. Pylearn expects it as a pylearn
+data object. Useful source for thes is at
+- pylearn2/pylearn2/datasets/dense_design_matrix.py
+- pylearn2/pylearn2/datasets/dataset.py
+- 
+
+The first thing to note is what is required of the dataset
+object.
+
+**** NEXT vector representation
+     :LOGBOOK:  
+     - State "NEXT"       from ""           [2015-01-11 Sun 15:48]
+     :END:      
+With the DenseDesignMatrix class we can just use a 2d array
+for images, provided they all have the same length. Lets
+build such a thing.
+
+Remember, the yaml is specified for the dataset object as
+follows.
+
+```
+dataset: &train !obj:pylearn2.datasets.mnist.MNIST {
+        which_set: 'train',
+        start: 0,
+        stop: 50000
+    },
+```
+
+So our work should have a config file with something like
+the following
+
+```
+dataset: &train !obj:pylearn2.datasets.plankton.PLANKTON
+```
+
+the which_set and other things removed from that yaml congif
+are arguments to the MNIST ~__init__~ method.
+
+Lets have a look at that class. I need to spend the time
+necessary to understand what's going on with this and
+prepare the plankton data in the same way.
+
+#+begin_src sh :results verbatim org replace output 
+cat ~/projects/2014-12-20_datascibowl/pylearn2/pylearn2/datasets/mnist.py
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC python
+"""
+The MNIST dataset.
+"""
+__authors__ = "Ian Goodfellow"
+__copyright__ = "Copyright 2010-2012, Universite de Montreal"
+__credits__ = ["Ian Goodfellow"]
+__license__ = "3-clause BSD"
+__maintainer__ = "LISA Lab"
+__email__ = "pylearn-dev@googlegroups"
+
+import numpy as N
+np = N
+from theano.compat.six.moves import xrange
+from pylearn2.datasets import dense_design_matrix
+from pylearn2.datasets import control
+from pylearn2.datasets import cache
+from pylearn2.utils import serial
+from pylearn2.utils.mnist_ubyte import read_mnist_images
+from pylearn2.utils.mnist_ubyte import read_mnist_labels
+from pylearn2.utils.rng import make_np_rng
+
+
+class MNIST(dense_design_matrix.DenseDesignMatrix):
+    """
+    The MNIST dataset
+
+    Parameters
+    ----------
+    which_set : str
+        'train' or 'test'
+    center : bool
+        If True, preprocess so that each pixel has zero mean.
+    shuffle : WRITEME
+    binarize : WRITEME
+    start : WRITEME
+    stop : WRITEME
+    axes : WRITEME
+    preprocessor : WRITEME
+    fit_preprocessor : WRITEME
+    fit_test_preprocessor : WRITEME
+    """
+
+    def __init__(self, which_set, center=False, shuffle=False,
+                 binarize=False, start=None, stop=None,
+                 axes=['b', 0, 1, 'c'],
+                 preprocessor=None,
+                 fit_preprocessor=False,
+                 fit_test_preprocessor=False):
+        self.args = locals()
+
+        if which_set not in ['train', 'test']:
+            if which_set == 'valid':
+                raise ValueError(
+                    "There is no such thing as the MNIST validation set. MNIST"
+                    "consists of 60,000 train examples and 10,000 test"
+                    "examples. If you wish to use a validation set you should"
+                    "divide the train set yourself. The pylearn2 dataset"
+                    "implements and will only ever implement the standard"
+                    "train / test split used in the literature.")
+            raise ValueError(
+                'Unrecognized which_set value "%s".' % (which_set,) +
+                '". Valid values are ["train","test"].')
+
+        def dimshuffle(b01c):
+            """
+            .. todo::
+
+                WRITEME
+            """
+            default = ('b', 0, 1, 'c')
+            return b01c.transpose(*[default.index(axis) for axis in axes])
+
+        if control.get_load_data():
+            path = "${PYLEARN2_DATA_PATH}/mnist/"
+            if which_set == 'train':
+                im_path = path + 'train-images-idx3-ubyte'
+                label_path = path + 'train-labels-idx1-ubyte'
+            else:
+                assert which_set == 'test'
+                im_path = path + 't10k-images-idx3-ubyte'
+                label_path = path + 't10k-labels-idx1-ubyte'
+            # Path substitution done here in order to make the lower-level
+            # mnist_ubyte.py as stand-alone as possible (for reuse in, e.g.,
+            # the Deep Learning Tutorials, or in another package).
+            im_path = serial.preprocess(im_path)
+            label_path = serial.preprocess(label_path)
+
+            # Locally cache the files before reading them
+            datasetCache = cache.datasetCache
+            im_path = datasetCache.cache_file(im_path)
+            label_path = datasetCache.cache_file(label_path)
+
+            topo_view = read_mnist_images(im_path, dtype='float32')
+            y = np.atleast_2d(read_mnist_labels(label_path)).T
+        else:
+            if which_set == 'train':
+                size = 60000
+            elif which_set == 'test':
+                size = 10000
+            else:
+                raise ValueError(
+                    'Unrecognized which_set value "%s".' % (which_set,) +
+                    '". Valid values are ["train","test"].')
+            topo_view = np.random.rand(size, 28, 28)
+            y = np.random.randint(0, 10, (size, 1))
+
+        if binarize:
+            topo_view = (topo_view > 0.5).astype('float32')
+
+        y_labels = 10
+
+        m, r, c = topo_view.shape
+        assert r == 28
+        assert c == 28
+        topo_view = topo_view.reshape(m, r, c, 1)
+
+        if which_set == 'train':
+            assert m == 60000
+        elif which_set == 'test':
+            assert m == 10000
+        else:
+            assert False
+
+        if center:
+            topo_view -= topo_view.mean(axis=0)
+
+        if shuffle:
+            self.shuffle_rng = make_np_rng(
+                None, [1, 2, 3], which_method="shuffle")
+            for i in xrange(topo_view.shape[0]):
+                j = self.shuffle_rng.randint(m)
+                # Copy ensures that memory is not aliased.
+                tmp = topo_view[i, :, :, :].copy()
+                topo_view[i, :, :, :] = topo_view[j, :, :, :]
+                topo_view[j, :, :, :] = tmp
+
+                tmp = y[i:i + 1].copy()
+                y[i] = y[j]
+                y[j] = tmp
+
+        super(MNIST, self).__init__(topo_view=dimshuffle(topo_view), y=y,
+                                    axes=axes, y_labels=y_labels)
+
+        assert not N.any(N.isnan(self.X))
+
+        if start is not None:
+            assert start >= 0
+            if stop > self.X.shape[0]:
+                raise ValueError('stop=' + str(stop) + '>' +
+                                 'm=' + str(self.X.shape[0]))
+            assert stop > start
+            self.X = self.X[start:stop, :]
+            if self.X.shape[0] != stop - start:
+                raise ValueError("X.shape[0]: %d. start: %d stop: %d"
+                                 % (self.X.shape[0], start, stop))
+            if len(self.y.shape) > 1:
+                self.y = self.y[start:stop, :]
+            else:
+                self.y = self.y[start:stop]
+            assert self.y.shape[0] == stop - start
+
+        if which_set == 'test':
+            assert fit_test_preprocessor is None or \
+                (fit_preprocessor == fit_test_preprocessor)
+
+        if self.X is not None and preprocessor:
+            preprocessor.apply(self, fit_preprocessor)
+
+    def adjust_for_viewer(self, X):
+        """
+        .. todo::
+
+            WRITEME
+        """
+        return N.clip(X * 2. - 1., -1., 1.)
+
+    def adjust_to_be_viewed_with(self, X, other, per_example=False):
+        """
+        .. todo::
+
+            WRITEME
+        """
+        return self.adjust_for_viewer(X)
+
+    def get_test_set(self):
+        """
+        .. todo::
+
+            WRITEME
+        """
+        args = {}
+        args.update(self.args)
+        del args['self']
+        args['which_set'] = 'test'
+        args['start'] = None
+        args['stop'] = None
+        args['fit_preprocessor'] = args['fit_test_preprocessor']
+        args['fit_test_preprocessor'] = None
+        return MNIST(**args)
+
+
+class MNIST_rotated_background(dense_design_matrix.DenseDesignMatrix):
+
+    """
+    .. todo::
+
+        WRITEME
+
+    Parameters
+    ----------
+    which_set : WRITEME
+    center : WRITEME
+    """
+
+    def __init__(self, which_set, center=False):
+        path = "${PYLEARN2_DATA_PATH}/mnist/mnist_rotation_back_image/" \
+            + which_set
+
+        obj = serial.load(path)
+        X = obj['data']
+        X = N.cast['float32'](X)
+        y = N.asarray(obj['labels'])
+
+        if center:
+            X -= X.mean(axis=0)
+
+        view_converter = dense_design_matrix.DefaultViewConverter((28, 28, 1))
+
+        super(MNIST_rotated_background, self).__init__(
+            X=X, y=y, y_labels=10, view_converter=view_converter)
+
+        assert not N.any(N.isnan(self.X))
+#+END_SRC
+
+**** NEXT conv2d representation
+     :LOGBOOK:  
+     - State "NEXT"       from ""           [2015-01-11 Sun 15:49]
+     :END:      
+We can also do images that are not of the same dimensions.
+First can try converting the np array of DenseDesignMatrix
+into a conv2d representation.
+https://groups.google.com/forum/#!topic/pylearn-users/IMxKyzrDKWM
+
+Then we can try setting up the conv2d representation on the
+raw images manually.
+
+I'm not 
+
+*** NEXT Model
+    :LOGBOOK:  
+    - State "NEXT"       from ""           [2015-01-11 Sun 14:41]
+    :END:      
+    - 
+
+*** NEXT training algorithm
+    :LOGBOOK:  
+    - State "NEXT"       from ""           [2015-01-11 Sun 14:41]
+    :END:      
+    - 
+
 * TODO ML Stuff [1/9]
+** TODO [[http://ufldl.stanford.edu/wiki/index.php/UFLDL_Tutorial][ufldl tutorial]] for deep learning
+   - 
 ** DONE Check the kaggle handwriting competition example
    CLOSED: [2015-01-04 Sun 12:39] SCHEDULED: <2014-12-26 Fri>
    :LOGBOOK:  
