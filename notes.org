@@ -990,7 +990,8 @@ I'm not
     :END:      
     - 
 
-* TODO ML Stuff [1/9]
+
+* TODO ML Stuff [1/11]
 ** TODO [[http://ufldl.stanford.edu/wiki/index.php/UFLDL_Tutorial][ufldl tutorial]] for deep learning
    - 
 ** DONE Check the kaggle handwriting competition example
@@ -1139,6 +1140,10 @@ I'm not
 ** TODO Different number of samples per class
    - shall we predict smaller samples classes with less
      confidence?
+
+** TODO Java deep learning library
+   - http://deeplearning4j.org/quickstart.html
+   - from bert
 
 
 * TODO Blog topics
