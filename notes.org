@@ -484,7 +484,11 @@ print x[:1,]
     - State "NEXT"       from "TODO"       [2015-01-09 Fri 21:22]
     :END:      
     - 
-** TODO Hu central moment expirimentation [0/2]
+** CANCELLED Hu central moment expirimentation [0/2]
+   :LOGBOOK:  
+   - State "CANCELLED"  from "TODO"       [2015-02-05 Thu 12:50] \\
+     - dnn
+   :END:      
 *** TODO Features [1/2]
    - [X] try using moments 2-6, I htink 1-7 are not as
      meaninful
@@ -499,16 +503,6 @@ print x[:1,]
      image to test the reflect, translation, rotation
      invariance
 
-** TODO DNN
-   :LOGBOOK:  
-   - State "NEXT"       from "TODO"       [2014-12-22 Mon 22:43]
-   :END:      
-   - theano, try that
-   - clone the repo into the venv project dir, load up
-     module and run tests
-   - leaving it to bert
-*** [[http://deeplearning.net/software/theano/install.html][Installing theano]]
-    - 
 ** NEXT ML procedure
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-01-09 Fri 22:52]
@@ -537,9 +531,526 @@ print x[:1,]
      - preprocess
      - 
 
+* TODO ML Stuff [1/11]
+** TODO [[http://ufldl.stanford.edu/wiki/index.php/UFLDL_Tutorial][ufldl tutorial]] for deep learning
+   - 
+** DONE Check the kaggle handwriting competition example
+   CLOSED: [2015-01-04 Sun 12:39] SCHEDULED: <2014-12-26 Fri>
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-01-04 Sun 12:39]
+   - State "NEXT"       from "TODO"       [2014-12-25 Thu 16:25]
+   :END:      
+   - bert thinks may be some inspiration here
+   - I am not seeing much other than tutorial/info on RF
+     classifier
+   - RF decision trees
+
+** CANCELLED make a uniform probability prediction
+   SCHEDULED: [2014-12-26 Fri]
+   :LOGBOOK:  
+   - State "CANCELLED"  from "NEXT"       [2015-01-04 Sun 12:39] \\
+     trivial
+   - Rescheduled from "2014-12-22 Mon" on [2014-12-25 Thu 16:29]
+   - State "NEXT"       from "TODO"       [2014-12-21 Sun 21:13]
+   :END:      
+   The idea here is just to learn a bit more about the data
+   manipulations, processing, etc in python.
+   Cancelled - trivial.
+*** data
+    - submission of form
+    | imagefilename | class1 prob | class2 prob | ... | classn prob |
+    | 1.jpg         | 1/n         | 1/n         | 1/n | 1/n         | 
+** NEXT Understand the error/performance measure better
+   - 
+** TODO Preprocessing
+   - we have to identify our features, at the same time as
+     not introducing some censorship of the dater
+   - tutorial uses
+     - thresholding on mean to reduce noise
+     - dilate to connect neighboring pixels
+     - segmention of connection regions - calculate their
+       labels (e.g. region 1,2,3)
+     - apply the labels to original images
+*** NEXT check prportion of obs with maxRegion [/]
+    :LOGBOOK:  
+    - State "NEXT"       from "TODO"       [2015-01-09 Fri 22:52]
+    :END:      
+    - when no maxregion, axis region ratio is 0, same with
+      hu centres for now
+    - [ ] get the proportion which are 0
+** TODO feature brainstorming
+   - Recall, manual feature selection is a difficult
+     endeavour, rather search the feature space and have a
+     generalization to create features, e.g. hu moments and
+     thier interactions
+   - aspect ratio
+   - eccentricity
+   - something about the protrusions
+   - how about degree of transparency/variance of pixel
+     values in feature
+   - most of these i reckon are captured by the hu moments
+*** DONE hu central moments Research
+    CLOSED: [2015-01-04 Sun 21:14] SCHEDULED: <2014-12-25 Thu>
+    :LOGBOOK:  
+    - State "DONE"       from ""           [2015-01-04 Sun 21:14]
+    :END:      
+    - and see [[Hu%20central%20moment%20expirimentation][Hu central moment expirimentation]] for tests to
+      try
+    - see the wiki [[http://en.wikipedia.org/wiki/Image_moment][here]]
+    - image moments are certain averages of image pixel
+      intensities, and functions of such first moments
+    - this is defined for discrete greyscale data as
+
+\begin{equation}
+  M_{ij} = \sum_x \sum_y x^i y^j I(x,y)
+\end{equation}
+
+    - they usually are formulated to have an attractive
+      property, e.g. the hu central moments are rotation,
+      translation
+
+:HIDDEN:
+\begin{equation}
+   I_1 = \eta_{20} + \eta_{02}
+\end{equation}
+\begin{equation}
+   I_2 = (\eta_{20} - \eta_{02})^2 + 4\eta_{11}^2
+\end{equation}
+\begin{equatio}
+   I_3 = (\eta_{30} - 3\eta_{12})^2 + (3\eta_{21} - \eta_{03})^2
+\end{equation}
+\begin{equatio}
+   I_4 = (\eta_{30} + \eta_{12})^2 + (\eta_{21} + \eta_{03})^2
+\end{equation}
+\begin{equatio}
+   I_5 = (\eta_{30} - 3\eta_{12}) (\eta_{30} + \eta_{12})[ (\eta_{30} + \eta_{12})^2 - 3 (\eta_{21} + \eta_{03})^2] + (3 \eta_{21} - \eta_{03}) (\eta_{21} + \eta_{03})[ 3(\eta_{30} + \eta_{12})^2 -  (\eta_{21} + \eta_{03})^2]
+\end{equation}
+\begin{equatio}
+   I_6 =  (\eta_{20} - \eta_{02})[(\eta_{30} + \eta_{12})^2 - (\eta_{21} + \eta_{03})^2] + 4\eta_{11}(\eta_{30} + \eta_{12})(\eta_{21} + \eta_{03})
+\end{equation}
+\begin{equatio}
+   I_7 = (3 \eta_{21} - \eta_{03})(\eta_{30} + \eta_{12})[(\eta_{30} + \eta_{12})^2 - 3(\eta_{21} + \eta_{03})^2] - (\eta_{30} - 3\eta_{12})(\eta_{21} + \eta_{03})[3(\eta_{30} + \eta_{12})^2 - (\eta_{21} + \eta_{03})^2].
+\end{equation}
+:END:
+
+   - how does this transfer to image/pattern recognition?
+     Any image can be represented as a density function in
+     x,y, which can further be represented by these moments.
+     these moments should be invariant with respect to the
+     images position in the visual field and pattern size.
+   - so *why* does the python method for getting these
+     moments take a region centroid? maybe it's to mask out
+     parts of the image, but in this case, where the rest of
+     the image is blank, I don't see it mattering
+   - so, of these moments, 7 may be bad as it represents
+     reflected images, and 1, the centroid, I don't think is
+     pertinent
+   - what of the others? the original [[http://www.sci.utah.edu/~gerig/CS7960-S2010/handouts/Hu.pdf][ieee transactions]]
+     document
+   - regardless, my question is, if i add crappy features,
+     why is the classifier using them and scoring so
+     poorly?!
+
+*** NEXT image feature extraction
+    :LOGBOOK:  
+    - State "NEXT"       from "TODO"       [2015-01-06 Tue 13:40]
+    :END:      
+    - [[http://scikit-learn.org/stable/modules/feature_extraction.html#image-feature-extraction][link to image feat extr section]] on scikitlearn feat
+      extr page
+** TODO different models than RF
+   - 
+** TODO model fitting
+   - remember, the feature array is just a matrix where the
+     features are some function/measure of the image
+   | class | feature 1 | feature 2 | ... | feature m |
+   |       |           |           |     |           |
+*** TODO RF [0/1]
+    - [ ] why is the classifier using features that give it
+      lower performance?! i.e. eccentricity ratio is good,
+      naive hu is good, but region centred HU with 0s or
+      naive hu for None largest regions sucks!
+** TODO *nested model* 
+   - There are many families of plankton, and there is some
+     similarity with sub classes, can we capture this
+   - Some of the subclasses are even the same as others, but
+     from different views
+     - e.g. hydromedusae partial dark vs ShapeA
+     - but we still have to predict each class as given in
+       the folders
+** TODO Different number of samples per class
+   - shall we predict smaller samples classes with less
+     confidence?
+
+** TODO Java deep learning library
+   - http://deeplearning4j.org/quickstart.html
+   - from bert
+
+
+* TODO Blog topics
+** DONE getting the data in
+   CLOSED: [2015-02-05 Thu 12:59]
+   :LOGBOOK:  
+   - State "DONE"       from ""           [2015-02-05 Thu 12:59]
+   :END:      
+Duplicate the minst data setup.
+
+#+begin_src sh :noeval
+# clone my fork of pylearn git clone git://
+git branch -c datascibowl
+cdproject
+cp pylearn2/datasets/mnist.py pylearn2/datasets/datascibowl.py
+cp pylearn2/utils/mnist-ubyte.py pylearn2/datascibowl_reader/datascibowl.py
+#+end_src
+
+The main thing to do with data for pylearn2 is to subclass
+the module's data objects. In this case, we are using
+denseDesignMatrix. Let's look at the relevant info from the
+docstring:
+
+#+begin_src python :noeval
+class DenseDesignMatrix(Dataset):
+
+    """
+
+    A class for representing datasets that can be stored as a \
+    dense design matrix (and optionally, associated targets).
+
+    Parameters
+    ----------
+    topo_view : ndarray, optional
+        Should be supplied if X is not.  An array whose first \
+        dimension is of length number examples. The remaining \
+        dimensions are examples with topological significance, \
+        e.g. for images the remaining axes are rows, columns, \
+        and channels.
+    y : ndarray, optional
+
+        Targets for each example (e.g., class ids, values to be predicted
+        in a regression task).
+
+        - 2D ndarray, data type optional:
+            This is the most common format and can be used for a variety
+            of problem types. Each row of the matrix becomes the target
+            for a different example. Specific models / costs can interpret
+            this target vector differently. For example, the `Linear`
+            output layer for the `MLP` class expects the target for each
+            example to be a vector of real-valued regression targets. (It
+            can be a vector of size one if you only have one regression
+            target). The `Softmax` output layer of the `MLP` class expects
+            the target to be a vector of N elements, where N is the number
+            of classes, and expects all but one of the elements to 0. One
+            element should have value 1., and the index of this element
+            identifies the target class.
+    axes: tuple, optional
+        The axes ordering of the provided topo_view. Must be some permutation
+        of ('b', 0, 1, 'c') where 'b' indicates the axis indexing examples,
+        0 and 1 indicate the row/cols dimensions and 'c' indicates the axis
+        indexing color channels.
+    y_labels : int, optional
+        If y contains labels then y_labels must be passed to indicate the
+        total number of possible labels e.g. 10 for the MNIST dataset
+        where the targets are numbers. This will make the set use
+        IndexSpace.
+    """
+#+end_src
+
+So, to subclass denseDesignMatrix for the data in question,
+the following are needed:
+
+- ~topo_view~
+  - an ndarray with the following format
+  (examples, parameters_indicating_topological_significance)
+  - where parameters_indicating_toplogical_significance
+    describe the structure of the data. Rows, columns, and
+    channels is given as an example. It is easy to imagine
+    setting up data in 3d space and temperature x-coords,y
+    coords,z coords, temperature, for example
+  - this is also what will actually hold the data in the
+    examples space
+  - e.g. we have (n, x, y) where n are ixj matrices of pixel
+    values and x,y are simply i,j respectively
+  - reshaping this to (n,x,y,1) signifies that n is
+    comprised of 1 value, whereas n,x,y,3 would let us use,
+    e.g., RGB
+
+- ~y~
+  - targets, each row corresponds to the targets for each
+    example
+  - for this example, this should be an ndarray with the
+    number of elements that we have classes, and all but one
+    element having value 0 (i.e. each example belongs to one
+    class)
+  - for example, imagine we have 3 mutually exclusive
+    classes to predict. ~y~ may look like
+| 0 | 0 | 1 |
+| 1 | 0 | 0 |
+| 1 | 0 | 0 |
+| 0 | 0 | 1 |
+| 0 | 0 | 1 |
+
+- ~axes~
+  - permutations of (b,0,1,c) where
+  - b indicates examples
+  - 0,1 indicates rows/columns(i dont understand this
+    convention, perhaps 0th and 1st dimension)
+  - and c indicates the colors
+
+- ~y_labels~
+  - an integer containing the total number of possible
+    labels, if y contains labels
+
+** DONE DataSciBowl options [2/2]
+   CLOSED: [2015-02-06 Fri 15:45]
+   :LOGBOOK:  
+   - State "DONE"       from ""           [2015-02-06 Fri 15:45]
+   :END:      
+   - [X] train and test
+     - actually, test folder in data is for prediction only
+     - do not use 'test'
+   - [X] total number of images for start - stop
+   - 
+** DONE Test DataSciBowl class
+   CLOSED: [2015-02-06 Fri 16:03]
+   :LOGBOOK:  
+   - State "DONE"       from ""           [2015-02-06 Fri 16:03]
+   :END:      
+   I could use the datascibowl_reader easily enough, but
+   couldn't manage to test the dataset class itself.
+
+   I tried just copying the class def to ipython and
+   instantiating, but it doesnt work. Which is so odd.
+   Because creating a DenseDesignMatrix works just fine.
+   Wtf. For now, I'm going to move on and see about setting
+   up a model.
+
+   It was because of a bad path. Working fine now.
+
+** DONE Model setup with pylearn2
+   CLOSED: [2015-02-06 Fri 16:18]
+   :LOGBOOK:  
+   - State "DONE"       from ""           [2015-02-06 Fri 16:18]
+   :END:      
+   In the pylearn directory ~scripts/~ there are great
+   tutorials. 
+
+   With a dataset class, the next step is training a model.
+   The convenient way to do this is with yaml docs. With
+   some adaptation from existing examples, mine should look
+   like:
+
+#+begin_src sh :results verbatim code replace output 
+cat sr_train.yaml
+#+end_src
+#+RESULTS:
+#+BEGIN_SRC sh
+!obj:pylearn2.train.Train {
+    "dataset": &train !obj:pylearn2.datasets.datascibowl.DataSciBowl {
+        which_set: 'train',
+        start: 0,
+        stop: 25000,
+	},
+    "model": !obj:pylearn2.models.softmax_regression.SoftmaxRegression {
+        n_classes: 121,
+        irange: 0.,
+        nvis: 1024,
+    },
+    "algorithm": !obj:pylearn2.training_algorithms.bgd.BGD {
+        batch_size: 5000,
+        line_search_mode: 'exhaustive',
+        conjugate: 1,
+        monitoring_dataset:
+            {
+                'train' : *train,
+                'valid' : !obj:pylearn2.datasets.datascibowl.DataSciBowl {
+                              which_set: 'train',
+                              start: 25000,
+                              stop:  30336,
+                          }
+            },
+        termination_criterion: !obj:pylearn2.termination_criteria.MonitorBased {
+            channel_name: "valid_y_misclass"
+        }
+    },
+    "extensions": [
+        !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
+             channel_name: 'valid_y_misclass',
+             save_path: "softmax_regression_best.pkl"
+        },
+    ],
+    save_path: "softmax_regression.pkl",
+    save_freq: 1
+}
+#+END_SRC
+
+   There's quite a bit going on there; the dataset, model,
+   and fitting algorithm are specified along with some
+   information for test/validation data. Feel free to leave
+   a comment if the syntax is confusing and I will try to
+   clarify.
+
+   I want to highlight that several datasets can be used to
+   monitor the fitting. Their names are arbitrary. I am
+   using 'train' and 'valid', where valid is just a subset
+   of the classified data reserved for testing.
+
+monitoring_dataset : Dataset or dictionary, optional
+
+    If not specified, no monitoring is used. If specified to
+    be a Dataset, monitor on that Dataset. If specified to
+    be dictionary, the keys should be string names of
+    datasets, and the values should be Datasets. All
+    monitoring channels will be computed for all monitoring
+    Datasets and will have the dataset name and an
+    underscore prepended to them
+
+** NEXT Fit a model
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-06 Fri 16:37]
+   :END:      
+See softmax_regression.ipynb.
+
+On first attempt I get an error.
+
+~ValueError: Input dimension mis-match~
+
+[[https://groups.google.com/forum/?utm_source=digest&utm_medium=email#!searchin/pylearn-users/input$20dimension$20mis-match/pylearn-users/vpSSiko0I4o/Gjuhl62TUyIJ][the google groups has seen such a thing]] before. A good next
+step is to play with the batch size, and to add theano flags
+~exception_verbosity=high~ and ~optimizer=fast_compile~ or
+~none~ to get a trace of which pylearn call is irritating
+theano.
+
+I'm not sure where to add these.
+
+[[http://deeplearning.net/software/theano/library/config.html][The docs]] note that theano looks at ~$HOME/.theanorc~
+
+write those options to that file and try again
+
+** feature vs model selection
+I tried a few features, with unexpected (poor) and otherwise
+insignificant impact on the model performance
+
+Lets consider something, about toying with features. 
+
+#+begin_src python :results output
+# https://docs.python.org/2/library/itertools.html#itertools.combinations
+import itertools as iter
+
+def count_iterable(i):
+    return sum(1 for e in i)
+
+num_vars = [x for x in range(10)]
+num_combinations = {}
+
+for vars in num_vars:
+    var_list = [var for var in range(vars)]
+    num_combinations[vars] = 0
+    for subsets in [y for y in var_list]:
+        combinations = iter.combinations(var_list, subsets)
+        num_combinations[vars] += count_iterable(combinations)
+
+print num_combinations
+#+end_src
+
+#+RESULTS:
+: {0: 0, 1: 1, 2: 3, 3: 7, 4: 15, 5: 31, 6: 63, 7: 127, 8: 255, 9: 511}
+
+There we have it, even 4 or 5 features, playing with them
+manually becomes unruly.
+
+With regression, we have some feature selection estimators,
+i.e. lasso.
+
+What about classification... decision trees should only use
+the optimal split. But they'll use some split even if
+there's not a good one.
+
+So, is it more effective to begin already with the model
+search? Or do we have to search the feature model space?
+
+This already highlights the difficulty with lacking domain
+knowledge. For the driver telematics I have a much better
+chance and specifying a pretty full feature space, but for
+plankton ID and image processing, where I know so little...
+sheesh.
+
+So, From here, given my efforts in toying with features have
+been unsuccessful, my focus goes towards trying different
+models and their parameter space. Then perhaps some progress
+can be made here.
+** hu central moments Research
+   - copied from above
+   - and see [[Hu%20central%20moment%20expirimentation][Hu central moment expirimentation]] for tests to
+     try
+   - see the wiki [[http://en.wikipedia.org/wiki/Image_moment][here]]
+   - image moments are certain averages of image pixel
+     intensities, and functions of such first moments
+   - this is defined for discrete greyscale data as
+
+\begin{equation}
+  M_{ij} = \sum_x \sum_y x^i y^j I(x,y)
+\end{equation}
+
+   - they usually are formulated to have an attractive
+     property, e.g. the hu central moments are rotation,
+     translation, reflection?
+
+:HIDDEN:
+\begin{equation}
+   I_1 = \eta_{20} + \eta_{02}
+\end{equation}
+\begin{equation}
+   I_2 = (\eta_{20} - \eta_{02})^2 + 4\eta_{11}^2
+\end{equation}
+\begin{equatio}
+   I_3 = (\eta_{30} - 3\eta_{12})^2 + (3\eta_{21} - \eta_{03})^2
+\end{equation}
+\begin{equatio}
+   I_4 = (\eta_{30} + \eta_{12})^2 + (\eta_{21} + \eta_{03})^2
+\end{equation}
+\begin{equatio}
+   I_5 = (\eta_{30} - 3\eta_{12}) (\eta_{30} + \eta_{12})[ (\eta_{30} + \eta_{12})^2 - 3 (\eta_{21} + \eta_{03})^2] + (3 \eta_{21} - \eta_{03}) (\eta_{21} + \eta_{03})[ 3(\eta_{30} + \eta_{12})^2 -  (\eta_{21} + \eta_{03})^2]
+\end{equation}
+\begin{equatio}
+   I_6 =  (\eta_{20} - \eta_{02})[(\eta_{30} + \eta_{12})^2 - (\eta_{21} + \eta_{03})^2] + 4\eta_{11}(\eta_{30} + \eta_{12})(\eta_{21} + \eta_{03})
+\end{equation}
+\begin{equatio}
+   I_7 = (3 \eta_{21} - \eta_{03})(\eta_{30} + \eta_{12})[(\eta_{30} + \eta_{12})^2 - 3(\eta_{21} + \eta_{03})^2] - (\eta_{30} - 3\eta_{12})(\eta_{21} + \eta_{03})[3(\eta_{30} + \eta_{12})^2 - (\eta_{21} + \eta_{03})^2].
+\end{equation}
+:END:
+
+   - how does this transfer to image/pattern recognition?
+     Any image can be represented as a density function in
+     x,y, which can further be represented by these moments.
+     these moments should be invariant with respect to the
+     images position in the visual field and pattern size.
+   - so *why* does the python method for getting these
+     moments take a region centroid? maybe it's to mask out
+     parts of the image, but in this case, where the rest of
+     the image is blank, I don't see it mattering
+   - so, of these moments, 7 may be bad as it represents
+     reflected images, and 1, the centroid, I don't think is
+     pertinent
+   - what of the others? the original [[http://www.sci.utah.edu/~gerig/CS7960-S2010/handouts/Hu.pdf][ieee transactions]]
+     document
+   - regardless, my question is, if i add crappy features,
+     why is the classifier using them and scoring so
+     poorly?!
+** python vs R
+   |-------------------+------------------+---------------------------|
+   | R                 | python           | notes                     |
+   |-------------------+------------------+---------------------------|
+   | dynamically typed | statically typed |                           |
+   | caret             | scikitlearn      | sklearn better API        |
+   | functional        | object oriented  | in the sense that methods |
+   |                   |                  | belong to functions in R  |
+   |                   |                  |                           |
 
 * TODO pylearn 2 convolutional neural networks
-** TODO setup pylearn 2 dependencies [2/3]
+** DONE setup pylearn 2 dependencies [2/3]
+   CLOSED: [2015-02-05 Thu 12:51]
+   :LOGBOOK:  
+   - State "DONE"       from "TODO"       [2015-02-05 Thu 12:51]
+   :END:      
    - [[http://deeplearning.net/software/pylearn2/#dependencies][pylearn 2 deps docs]]
 
 *** DONE theano, might want bleeding edge
@@ -991,278 +1502,3 @@ I'm not
     - 
 
 
-* TODO ML Stuff [1/11]
-** TODO [[http://ufldl.stanford.edu/wiki/index.php/UFLDL_Tutorial][ufldl tutorial]] for deep learning
-   - 
-** DONE Check the kaggle handwriting competition example
-   CLOSED: [2015-01-04 Sun 12:39] SCHEDULED: <2014-12-26 Fri>
-   :LOGBOOK:  
-   - State "DONE"       from "NEXT"       [2015-01-04 Sun 12:39]
-   - State "NEXT"       from "TODO"       [2014-12-25 Thu 16:25]
-   :END:      
-   - bert thinks may be some inspiration here
-   - I am not seeing much other than tutorial/info on RF
-     classifier
-   - RF decision trees
-
-** CANCELLED make a uniform probability prediction
-   SCHEDULED: [2014-12-26 Fri]
-   :LOGBOOK:  
-   - State "CANCELLED"  from "NEXT"       [2015-01-04 Sun 12:39] \\
-     trivial
-   - Rescheduled from "2014-12-22 Mon" on [2014-12-25 Thu 16:29]
-   - State "NEXT"       from "TODO"       [2014-12-21 Sun 21:13]
-   :END:      
-   The idea here is just to learn a bit more about the data
-   manipulations, processing, etc in python.
-   Cancelled - trivial.
-*** data
-    - submission of form
-    | imagefilename | class1 prob | class2 prob | ... | classn prob |
-    | 1.jpg         | 1/n         | 1/n         | 1/n | 1/n         | 
-** NEXT Understand the error/performance measure better
-   - 
-** TODO Preprocessing
-   - we have to identify our features, at the same time as
-     not introducing some censorship of the dater
-   - tutorial uses
-     - thresholding on mean to reduce noise
-     - dilate to connect neighboring pixels
-     - segmention of connection regions - calculate their
-       labels (e.g. region 1,2,3)
-     - apply the labels to original images
-*** NEXT check prportion of obs with maxRegion [/]
-    :LOGBOOK:  
-    - State "NEXT"       from "TODO"       [2015-01-09 Fri 22:52]
-    :END:      
-    - when no maxregion, axis region ratio is 0, same with
-      hu centres for now
-    - [ ] get the proportion which are 0
-** TODO feature brainstorming
-   - Recall, manual feature selection is a difficult
-     endeavour, rather search the feature space and have a
-     generalization to create features, e.g. hu moments and
-     thier interactions
-   - aspect ratio
-   - eccentricity
-   - something about the protrusions
-   - how about degree of transparency/variance of pixel
-     values in feature
-   - most of these i reckon are captured by the hu moments
-*** DONE hu central moments Research
-    CLOSED: [2015-01-04 Sun 21:14] SCHEDULED: <2014-12-25 Thu>
-    :LOGBOOK:  
-    - State "DONE"       from ""           [2015-01-04 Sun 21:14]
-    :END:      
-    - and see [[Hu%20central%20moment%20expirimentation][Hu central moment expirimentation]] for tests to
-      try
-    - see the wiki [[http://en.wikipedia.org/wiki/Image_moment][here]]
-    - image moments are certain averages of image pixel
-      intensities, and functions of such first moments
-    - this is defined for discrete greyscale data as
-
-\begin{equation}
-  M_{ij} = \sum_x \sum_y x^i y^j I(x,y)
-\end{equation}
-
-    - they usually are formulated to have an attractive
-      property, e.g. the hu central moments are rotation,
-      translation
-
-:HIDDEN:
-\begin{equation}
-   I_1 = \eta_{20} + \eta_{02}
-\end{equation}
-\begin{equation}
-   I_2 = (\eta_{20} - \eta_{02})^2 + 4\eta_{11}^2
-\end{equation}
-\begin{equatio}
-   I_3 = (\eta_{30} - 3\eta_{12})^2 + (3\eta_{21} - \eta_{03})^2
-\end{equation}
-\begin{equatio}
-   I_4 = (\eta_{30} + \eta_{12})^2 + (\eta_{21} + \eta_{03})^2
-\end{equation}
-\begin{equatio}
-   I_5 = (\eta_{30} - 3\eta_{12}) (\eta_{30} + \eta_{12})[ (\eta_{30} + \eta_{12})^2 - 3 (\eta_{21} + \eta_{03})^2] + (3 \eta_{21} - \eta_{03}) (\eta_{21} + \eta_{03})[ 3(\eta_{30} + \eta_{12})^2 -  (\eta_{21} + \eta_{03})^2]
-\end{equation}
-\begin{equatio}
-   I_6 =  (\eta_{20} - \eta_{02})[(\eta_{30} + \eta_{12})^2 - (\eta_{21} + \eta_{03})^2] + 4\eta_{11}(\eta_{30} + \eta_{12})(\eta_{21} + \eta_{03})
-\end{equation}
-\begin{equatio}
-   I_7 = (3 \eta_{21} - \eta_{03})(\eta_{30} + \eta_{12})[(\eta_{30} + \eta_{12})^2 - 3(\eta_{21} + \eta_{03})^2] - (\eta_{30} - 3\eta_{12})(\eta_{21} + \eta_{03})[3(\eta_{30} + \eta_{12})^2 - (\eta_{21} + \eta_{03})^2].
-\end{equation}
-:END:
-
-   - how does this transfer to image/pattern recognition?
-     Any image can be represented as a density function in
-     x,y, which can further be represented by these moments.
-     these moments should be invariant with respect to the
-     images position in the visual field and pattern size.
-   - so *why* does the python method for getting these
-     moments take a region centroid? maybe it's to mask out
-     parts of the image, but in this case, where the rest of
-     the image is blank, I don't see it mattering
-   - so, of these moments, 7 may be bad as it represents
-     reflected images, and 1, the centroid, I don't think is
-     pertinent
-   - what of the others? the original [[http://www.sci.utah.edu/~gerig/CS7960-S2010/handouts/Hu.pdf][ieee transactions]]
-     document
-   - regardless, my question is, if i add crappy features,
-     why is the classifier using them and scoring so
-     poorly?!
-
-*** NEXT image feature extraction
-    :LOGBOOK:  
-    - State "NEXT"       from "TODO"       [2015-01-06 Tue 13:40]
-    :END:      
-    - [[http://scikit-learn.org/stable/modules/feature_extraction.html#image-feature-extraction][link to image feat extr section]] on scikitlearn feat
-      extr page
-** TODO different models than RF
-   - 
-** TODO model fitting
-   - remember, the feature array is just a matrix where the
-     features are some function/measure of the image
-   | class | feature 1 | feature 2 | ... | feature m |
-   |       |           |           |     |           |
-*** TODO RF [0/1]
-    - [ ] why is the classifier using features that give it
-      lower performance?! i.e. eccentricity ratio is good,
-      naive hu is good, but region centred HU with 0s or
-      naive hu for None largest regions sucks!
-** TODO *nested model* 
-   - There are many families of plankton, and there is some
-     similarity with sub classes, can we capture this
-   - Some of the subclasses are even the same as others, but
-     from different views
-     - e.g. hydromedusae partial dark vs ShapeA
-     - but we still have to predict each class as given in
-       the folders
-** TODO Different number of samples per class
-   - shall we predict smaller samples classes with less
-     confidence?
-
-** TODO Java deep learning library
-   - http://deeplearning4j.org/quickstart.html
-   - from bert
-
-
-* TODO Blog topics
-** feature vs model selection
-I tried a few features, with unexpected (poor) and otherwise
-insignificant impact on the model performance
-
-Lets consider something, about toying with features. 
-
-#+begin_src python :results output
-# https://docs.python.org/2/library/itertools.html#itertools.combinations
-import itertools as iter
-
-def count_iterable(i):
-    return sum(1 for e in i)
-
-num_vars = [x for x in range(10)]
-num_combinations = {}
-
-for vars in num_vars:
-    var_list = [var for var in range(vars)]
-    num_combinations[vars] = 0
-    for subsets in [y for y in var_list]:
-        combinations = iter.combinations(var_list, subsets)
-        num_combinations[vars] += count_iterable(combinations)
-
-print num_combinations
-#+end_src
-
-#+RESULTS:
-: {0: 0, 1: 1, 2: 3, 3: 7, 4: 15, 5: 31, 6: 63, 7: 127, 8: 255, 9: 511}
-
-There we have it, even 4 or 5 features, playing with them
-manually becomes unruly.
-
-With regression, we have some feature selection estimators,
-i.e. lasso.
-
-What about classification... decision trees should only use
-the optimal split. But they'll use some split even if
-there's not a good one.
-
-So, is it more effective to begin already with the model
-search? Or do we have to search the feature model space?
-
-This already highlights the difficulty with lacking domain
-knowledge. For the driver telematics I have a much better
-chance and specifying a pretty full feature space, but for
-plankton ID and image processing, where I know so little...
-sheesh.
-
-So, From here, given my efforts in toying with features have
-been unsuccessful, my focus goes towards trying different
-models and their parameter space. Then perhaps some progress
-can be made here.
-** hu central moments Research
-   - copied from above
-   - and see [[Hu%20central%20moment%20expirimentation][Hu central moment expirimentation]] for tests to
-     try
-   - see the wiki [[http://en.wikipedia.org/wiki/Image_moment][here]]
-   - image moments are certain averages of image pixel
-     intensities, and functions of such first moments
-   - this is defined for discrete greyscale data as
-
-\begin{equation}
-  M_{ij} = \sum_x \sum_y x^i y^j I(x,y)
-\end{equation}
-
-   - they usually are formulated to have an attractive
-     property, e.g. the hu central moments are rotation,
-     translation, reflection?
-
-:HIDDEN:
-\begin{equation}
-   I_1 = \eta_{20} + \eta_{02}
-\end{equation}
-\begin{equation}
-   I_2 = (\eta_{20} - \eta_{02})^2 + 4\eta_{11}^2
-\end{equation}
-\begin{equatio}
-   I_3 = (\eta_{30} - 3\eta_{12})^2 + (3\eta_{21} - \eta_{03})^2
-\end{equation}
-\begin{equatio}
-   I_4 = (\eta_{30} + \eta_{12})^2 + (\eta_{21} + \eta_{03})^2
-\end{equation}
-\begin{equatio}
-   I_5 = (\eta_{30} - 3\eta_{12}) (\eta_{30} + \eta_{12})[ (\eta_{30} + \eta_{12})^2 - 3 (\eta_{21} + \eta_{03})^2] + (3 \eta_{21} - \eta_{03}) (\eta_{21} + \eta_{03})[ 3(\eta_{30} + \eta_{12})^2 -  (\eta_{21} + \eta_{03})^2]
-\end{equation}
-\begin{equatio}
-   I_6 =  (\eta_{20} - \eta_{02})[(\eta_{30} + \eta_{12})^2 - (\eta_{21} + \eta_{03})^2] + 4\eta_{11}(\eta_{30} + \eta_{12})(\eta_{21} + \eta_{03})
-\end{equation}
-\begin{equatio}
-   I_7 = (3 \eta_{21} - \eta_{03})(\eta_{30} + \eta_{12})[(\eta_{30} + \eta_{12})^2 - 3(\eta_{21} + \eta_{03})^2] - (\eta_{30} - 3\eta_{12})(\eta_{21} + \eta_{03})[3(\eta_{30} + \eta_{12})^2 - (\eta_{21} + \eta_{03})^2].
-\end{equation}
-:END:
-
-   - how does this transfer to image/pattern recognition?
-     Any image can be represented as a density function in
-     x,y, which can further be represented by these moments.
-     these moments should be invariant with respect to the
-     images position in the visual field and pattern size.
-   - so *why* does the python method for getting these
-     moments take a region centroid? maybe it's to mask out
-     parts of the image, but in this case, where the rest of
-     the image is blank, I don't see it mattering
-   - so, of these moments, 7 may be bad as it represents
-     reflected images, and 1, the centroid, I don't think is
-     pertinent
-   - what of the others? the original [[http://www.sci.utah.edu/~gerig/CS7960-S2010/handouts/Hu.pdf][ieee transactions]]
-     document
-   - regardless, my question is, if i add crappy features,
-     why is the classifier using them and scoring so
-     poorly?!
-** python vs R
-   |-------------------+------------------+---------------------------|
-   | R                 | python           | notes                     |
-   |-------------------+------------------+---------------------------|
-   | dynamically typed | statically typed |                           |
-   | caret             | scikitlearn      | sklearn better API        |
-   | functional        | object oriented  | in the sense that methods |
-   |                   |                  | belong to functions in R  |
-   |                   |                  |                           |
