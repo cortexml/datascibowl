@@ -923,7 +923,16 @@ I'm not sure where to add these.
 
 [[http://deeplearning.net/software/theano/library/config.html][The docs]] note that theano looks at ~$HOME/.theanorc~
 
-write those options to that file and try again
+Write those options to that file and try again.
+
+#+begin_src sh :noeval
+echo "[global]" > /home/joth/.theanorc
+echo "exception_verbosity = high" >> /home/joth/.theanorc
+echo "optimizer = fast_compile" >> /home/joth/.theanorc
+#+end_src
+
+#+RESULTS:
+
 
 ** feature vs model selection
 I tried a few features, with unexpected (poor) and otherwise
