@@ -931,7 +931,172 @@ echo "exception_verbosity = high" >> /home/joth/.theanorc
 echo "optimizer = fast_compile" >> /home/joth/.theanorc
 #+end_src
 
-#+RESULTS:
+Still no success. But now with more debug info.
+
+I tried a few modifications to the sr_train.yaml to rule out
+plausible simple mistakes with no success.
+
+Someone on the forums recommended me to try something.
+[[https://groups.google.com/forum/?utm_source=digest&utm_medium=email#!topic/pylearn-users/JaOAPWlIi8w][here's]] the tread.
+
+"One way to figure out what is happening would be to put a
+breakpoint in monitor.py a bit before line 255, and check
+what comes out of the data iterator (X), in particular the
+shape of all elements in the tuple, and if they seem to
+correspond to inputs or targets of examples in the dataset."
+
+Let's look at the call method of monitor.py
+
+#+begin_src python :noeval
+    def __call__(self):
+        """
+        Runs the model on the monitoring dataset in order to add one
+        data point to each of the channels.
+        """
+
+        # If the channels have changed at all, we need to recompile the theano
+        # functions used to compute them
+        if self._dirty:
+            self.redo_theano()
+
+        datasets = self._datasets
+
+        # Set all channels' val_shared to 0
+        self.begin_record_entry()
+        for d, i, b, n, a, sd, ne in safe_izip(datasets,
+                                               self._iteration_mode,
+                                               self._batch_size,
+                                               self._num_batches,
+                                               self.accum,
+                                               self._rng_seed,
+                                               self.num_examples):
+            if isinstance(d, six.string_types):
+                d = yaml_parse.load(d)
+                raise NotImplementedError()
+
+            # need to put d back into self._datasets
+            myiterator = d.iterator(mode=i,
+                                    batch_size=b,
+                                    num_batches=n,
+                                    data_specs=self._flat_data_specs,
+                                    return_tuple=True,
+                                    rng=sd)
+
+            # If self._flat_data_specs is empty, no channel needs data,
+            # so we do not need to call the iterator in order to average
+            # the monitored values across different batches, we only
+            # have to call them once.
+            if len(self._flat_data_specs[1]) == 0:
+                X = ()
+                self.run_prereqs(X, d)
+                a(*X)
+
+            else:
+                actual_ne = 0
+                for X in myiterator:
+                    # X is a flat (not nested) tuple
+                    self.run_prereqs(X, d)
+                    a(*X)
+                    actual_ne += self._flat_data_specs[0].np_batch_size(X)
+                # end for X
+                if actual_ne != ne:
+                    raise RuntimeError("At compile time, your iterator said "
+                                       "it had %d examples total, but at "
+                                       "runtime it gave us %d." %
+                                       (ne, actual_ne))
+        # end for d
+
+        log.info("Monitoring step:")
+        log.info("\tEpochs seen: %d" % self._epochs_seen)
+        log.info("\tBatches seen: %d" % self._num_batches_seen)
+        log.info("\tExamples seen: %d" % self._examples_seen)
+        t = time.time() - self.t0
+        for channel_name in sorted(self.channels.keys(),
+                                   key=number_aware_alphabetical_key):
+            channel = self.channels[channel_name]
+            channel.time_record.append(t)
+            channel.batch_record.append(self._num_batches_seen)
+            channel.example_record.append(self._examples_seen)
+            channel.epoch_record.append(self._epochs_seen)
+            val = channel.val_shared.get_value()
+            channel.val_record.append(val)
+            # TODO: use logging infrastructure so that user can configure
+            # formatting
+            if abs(val) < 1e4:
+                val_str = str(val)
+            else:
+                val_str = '%.3e' % val
+
+            log.info("\t%s: %s" % (channel_name, val_str))
+#+end_src
+
+For each dataset an iterator is set up. My work is breaking
+in the comparison of the first two items the iterator
+returns. It will also be useful then to look at the __next__
+method for the default densedesignmatrix class and compare
+it to the mnist one.
+
+In python,
+
+#+begin_src python :noeval
+import pdb
+pdb.set_trace() # at break location
+#+end_src
+
+Debug learning:
+:HIDDEN:
+Some useful pdb commands
+
+~(p)rint~ print a variable
+
+~(s)tep~ to step forward one statement, whereas ~(n)ext~
+will step forward a function call. If the line is not a
+function call, ~s~ and ~n~ are equivalent.
+
+~r~ continue until routine; lets you continue until the next
+return, great way to escape functions if you reckon the
+bug to not be present
+
+~(q)uit~ 
+
+~commands~ to enter literal commands, enter *end* to stop,
+and n to step through the commands
+
+And an excellent tutorial is [[https://pythonconquerstheuniverse.wordpress.com/2009/09/10/debugging-in-python/][here]]
+:END:
+
+That aside behind us, I got into the stack to check out what
+the iterator is returning. ~X[0]~ are examples and ~X[1]~
+should be log probabilities for each class.
+
+#+begin_src python :noeval
+(Pdb) X[0].shape
+(5000, 1024)
+(Pdb) X[1].shape
+(1, 121)
+#+end_src
+
+~X[1]~ actually all have value 1.
+
+Also, in ~X[0]~, the data may be degenerate. For most of the
+examples, the max value is 0. This is confirmed in the raw
+data.
+
+#+begin_src python
+image_mean = [np.reshape(i, (1, 1024)).mean() for i in test.X]
+d = {x:image_mean.count(x) for x in image_mean}
+# {0.0: 30215,
+#  0.71068366555606532: 1,
+#  0.72670476576861209: 1,
+#  0.73890979243259802: 1, 
+#  ...}
+#+end_src
+
+So something is wrong with the data.
+
+The a(*X) call is also confusing to me. I asked again in the
+google group.
+
 
 
 ** feature vs model selection
