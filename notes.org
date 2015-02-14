@@ -1040,7 +1040,7 @@ In python,
 
 #+begin_src python :noeval
 import pdb
-pdb.set_trace() # at break location
+pdb.set_trace() # at break location, on/as line 256
 #+end_src
 
 Debug learning:
