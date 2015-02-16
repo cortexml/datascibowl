@@ -1,4 +1,6 @@
 ltxpng/*
-competition_data/*
+/competition_data/
 .ipynb_checkpoints/*
 pylearn*
+/data/
+*.pkl
