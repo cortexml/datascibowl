@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [10/24]
+* TODO Blog topics/Notes [10/23]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -1593,8 +1593,9 @@ y = f( x_test )
    -
 
 ** TODO [#B] Then simple BGD and SGD again on softmax again
+   - using augmented data
    
-** TODO How to implement CNN
+** TODO [#B] How to implement CNN
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-16 Mon 11:46]
    :END:      
@@ -1632,6 +1633,29 @@ y = f( x_test )
                 ],
            nvis: 784,
        },
+*** Research on CNN application
+    See [[http://www.cs.toronto.edu/~fritz/absps/imagenet.pdf][krizhevsky et al]]
+    - [[http://ufldl.stanford.edu/wiki/index.php/Softmax_Regression][Here]] is a good wiki on softmax
+      - it's use is for mutually exclusive multiclass problems
+      - in the 2 class problem it simplifies to logistic regression
+    - The parameters are learned by optimizing the cost
+      function using an itertive algorithm, such as gradient
+      descent. Note that such an optimization algorithm can
+      be used for many cost functions, such as those applying
+      to K-means, SVM, Lasso.
+      - the cost function for softmax with weight decay, is
+       	some equation
+      - [[http://research.microsoft.com/pubs/192769/tricks-2012.pdf][bottou]] provides some good info on SGD
+       	- it should be used when training time is the bottleneck
+      - [[http://leon.bottou.org/slides/largescale/lstut.pdf][more from bottou]], SGD with mnist as example
+    - Convolutional layers?
+    - Kernals and neurons?
+    - Dropout
+    - softmax params
+      - We trained our models using stochastic gradient
+       	descent with a batch size of 128 examples, momentum
+       	of 0.9, and weight decay of 0.0005.
+    - 
 *** then cnn
     - http://deeplearning.net/tutorial/lenet.html great explanation
     - http://localhost:8888/notebooks/pylearn2_fork/pylearn2/scripts/tutorials/convolutional_network/convolutional_network.ipynb
@@ -1649,6 +1673,12 @@ y = f( x_test )
       - conv rectified layers are used
       - and 
 
+** TODO [#B] Implement the classifier cost function in monitoring
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-15 Sun 22:10]
+   :END:      
+   - 
+** TODO [#B] parameter tuning
 ** TODO [#B] Even obs per class?
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-16 Mon 11:41]
@@ -1668,46 +1698,12 @@ y = f( x_test )
      | B | B | B |
      ?
 
-** NEXT Research on CNN application
-   :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-02-16 Mon 11:11]
-   :END:      
-   See [[http://www.cs.toronto.edu/~fritz/absps/imagenet.pdf][krizhevsky et al]]
-   - [[http://ufldl.stanford.edu/wiki/index.php/Softmax_Regression][Here]] is a good wiki on softmax
-     - it's use is for mutually exclusive multiclass problems
-     - in the 2 class problem it simplifies to logistic regression
-   - The parameters are learned by optimizing the cost
-     function using an itertive algorithm, such as gradient
-     descent. Note that such an optimization algorithm can
-     be used for many cost functions, such as those applying
-     to K-means, SVM, Lasso.
-     - the cost function for softmax with weight decay, is
-       some equation
-     - [[http://research.microsoft.com/pubs/192769/tricks-2012.pdf][bottou]] provides some good info on SGD
-       - it should be used when training time is the bottleneck
-     - [[http://leon.bottou.org/slides/largescale/lstut.pdf][more from bottou]], SGD with mnist as example
-   - Convolutional layers?
-   - Kernals and neurons?
-   - Dropout
-   - softmax params
-     - We trained our models using stochastic gradient
-       descent with a batch size of 128 examples, momentum
-       of 0.9, and weight decay of 0.0005.
-   - 
-** Batch size, momentum optimization
-   -
-
 ** TODO [#C] Thresholded observations?
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-16 Mon 11:11]
    :END:      
    - I thought softmax didn't learn 0 and 1 well, this
      should perform poorly
-** TODO Implement the classifier cost function in monitoring
-   :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-02-15 Sun 22:10]
-   :END:      
-   - 
 ** [[http://daemonmaker.blogspot.ca/2014/10/a-first-experiment-with-pylearn2.html][Pylearn2 models]] and [[http://deeplearning.net/software/pylearn2/library/index.html#libdoc][official docs]]
    - algorithm
      - bgd
