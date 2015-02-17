@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [10/23]
+* TODO Blog topics/Notes [11/24]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -1564,8 +1564,10 @@ y = f( x_test )
    - for now I can test it on the training data in the ipy notebook
    - good news is, class probs are predicted for each observation
 
-** NEXT [#A] Setup validation set for prediction
+** DONE [#A] Setup validation set for prediction
+   CLOSED: [2015-02-17 Tue 08:43]
    :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-02-17 Tue 08:43]
    - State "NEXT"       from ""           [2015-02-16 Mon 20:46]
    :END:      
    - could setup a function/class to writie the output data
@@ -1574,6 +1576,18 @@ y = f( x_test )
    - in place of the per directory image fiel reading in the
      DataSciBowl_Reader class and save to a .pkl
    - predict on the np array with the good BGD softmax
+*** Saving large pickle/h5
+    - doesn't work
+    - get numexpr Cython and tables, hdf5 from package manager
+    - then see
+      http://www.shocksolution.com/2010/01/storing-large-numpy-arrays-on-disk-python-pickle-vs-hdf5adsf/
+#+begin_src python :noeval
+import tables
+h5file = tables.openFile('test.h5', mode='w', title="Test Array")
+root = h5file.root
+h5file.createArray(root, "test", a)
+h5file.close()
+#+end_src
 
 ** NEXT [#B] Get predictions on validation set and submit
    :LOGBOOK:  
@@ -1704,6 +1718,8 @@ y = f( x_test )
    :END:      
    - I thought softmax didn't learn 0 and 1 well, this
      should perform poorly
+** TODO [#C] Compare time to read images vs load h5 file
+   - see [[Saving large pickle/h5]]
 ** [[http://daemonmaker.blogspot.ca/2014/10/a-first-experiment-with-pylearn2.html][Pylearn2 models]] and [[http://deeplearning.net/software/pylearn2/library/index.html#libdoc][official docs]]
    - algorithm
      - bgd
