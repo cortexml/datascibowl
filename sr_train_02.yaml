@@ -1,0 +1,39 @@
+!obj:pylearn2.train.Train {
+    dataset: &train !obj:pylearn2.datasets.datascibowl.DataSciBowl {
+        which_set: 'train',
+        start: 0,
+        stop: 25000,
+        shuffle: True
+    },
+    model: !obj:pylearn2.models.softmax_regression.SoftmaxRegression {
+        n_classes: 121,
+        irange: 0.,
+        nvis: 1024
+    },
+    algorithm: !obj:pylearn2.training_algorithms.bgd.BGD {
+        batch_size: 5000,
+        line_search_mode: 'exhaustive',
+        conjugate: True,
+        monitoring_dataset:
+            {
+                'train' : *train,
+                'valid' : !obj:pylearn2.datasets.datascibowl.DataSciBowl {
+                              which_set: 'train',
+                              start: 25000,
+                              stop:  30000,
+                              shuffle: True
+                          }
+            },
+        termination_criterion: !obj:pylearn2.termination_criteria.MonitorBased {
+            channel_name: "valid_y_misclass"
+        }
+    },
+    extensions: [
+        !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
+             channel_name: 'valid_y_misclass',
+             save_path: "softmax_regression_best_02_shuffle.pkl"
+        }
+    ],
+    save_path: "softmax_regression_02_shuffle.pkl",
+    save_freq: 1
+}

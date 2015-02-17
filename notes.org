@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [6/14]
+* TODO Blog topics/Notes [10/24]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -1445,28 +1445,265 @@ train_y_row_norms_min : 0.0
 training_seconds_this_epoch : 48.921041
 #+end_src
 
-** NEXT [#A] Shuffle the observations
+** DONE Shuffle the observations - keep it going forward
+   CLOSED: [2015-02-16 Mon 10:36]
    :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-02-16 Mon 10:36]
+   CLOCK: [2015-02-16 Mon 10:08]--[2015-02-16 Mon 10:36] =>  0:28
    - State "NEXT"       from ""           [2015-02-15 Sun 22:10]
    :END:      
    - deterministically
-** NEXT [#A] Predictions
+   - this step alone improves misclassification rate from ~1 to ~0.8
+** DONE Centred observations
+   CLOSED: [2015-02-16 Mon 11:41]
    :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-02-16 Mon 11:41]
+   - State "NEXT"       from ""           [2015-02-16 Mon 11:10]
+   :END:      
+   - this also improves misclass from about .75 to .65
+   - probably worth keeping
+** DONE [#A] Try SGD
+   CLOSED: [2015-02-16 Mon 17:07]
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-02-16 Mon 17:07]
+   CLOCK: [2015-02-16 Mon 16:33]--[2015-02-16 Mon 17:07] =>  0:34
+   - State "NEXT"       from ""           [2015-02-16 Mon 16:30]
+   :END:      
+   Module for performing batch gradient methods.
+   Technically, SGD and BGD both work with any batch size,
+   but SGD has no line search functionality and is thus best
+   suited to small batches, while BGD supports line searches
+   and thuse works best with large batches.
+
+   [[http://deeplearning.net/software/pylearn2/library/train.html#module-pylearn2.training_algorithms.sgd][link]]
+   [[deeplearning.net/software/pylearn2/library/train.html#module-pylearn2.training_algorithms.sgd][proper link]]
+
+   How does this compare to BGD.
+   :HIDDEN:
+   class pylearn2.training_algorithms.bgd.BGD(
+       cost=None, 
+       batch_size=None, 
+       batches_per_iter=None, 
+       updates_per_batch=10, 
+       monitoring_batch_size=None, 
+       monitoring_batches=None, 
+       monitoring_dataset=None, 
+       termination_criterion=None, 
+       set_batch_size=False, 
+       reset_alpha=True, 
+       conjugate=False, 
+       min_init_alpha=0.001, 
+       reset_conjugate=True, 
+       line_search_mode=None, 
+       verbose_optimization=False, 
+       scale_step=1.0, 
+       theano_function_mode=None, 
+       init_alpha=None, 
+       seed=None)
+   class pylearn2.training_algorithms.sgd.SGD(
+       learning_rate, 
+       cost=None, 
+       batch_size=None, 
+       monitoring_batch_size=None, 
+       monitoring_batches=None, 
+       monitoring_dataset=None, 
+       monitor_iteration_mode='sequential', 
+       termination_criterion=None, 
+       update_callbacks=None, 
+       learning_rule=None, 
+       set_batch_size=False, 
+       train_iteration_mode=None, 
+       batches_per_iter=None, 
+       theano_function_mode=None, 
+       monitoring_costs=None, 
+       seed=[2012, 10, 5])
+   :END:
+   Basically, in terms of parameters, we now have to choose
+   a learning rate.
+
+   Bottou suggest expirimenting with different rates on
+   small samples. This is a research topic on its own.
+
+   I tried learning rates of 0.01 and 0.001 with 128 batch size.
+
+   This is muuuuuch faster than BGD.
+
+   But got better results with BGD (i.e. misclass rate of
+   0.8x with SGD).
+
+** DONE [#A] Get predictions on training set
+   CLOSED: [2015-02-16 Mon 20:50]
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-02-16 Mon 20:50]
+   - State "NEXT"       from "TODO"       [2015-02-16 Mon 20:50]
    - State "NEXT"       from "WAITING"    [2015-02-15 Sun 22:17]
    - State "NEXT"       from ""           [2015-02-15 Sun 22:17]
    :END:      
-   -
-** NEXT [#A] train on all imgs, submit
+   :HIDDEN:
+   - so following the [[http://fastml.com/how-to-get-predictions-from-pylearn2/][fastml]], it's pretty easy to setup
+     predictions, see
+     http://localhost:8888/notebooks/predict_tests.ipynb or below
+
+#+begin_src python :noeval
+import theano
+from pylearn2.utils import serial
+
+model_path = 'softmax_regression_best_shuf_ctr_03.pkl'
+model = serial.load( model_path )
+
+X = model.get_input_space().make_theano_batch()
+Y = model.fprop( X )
+
+# Y = T.argmax( Y, axis = 1 ) # if binary clsasification
+f = theano.function( [X], Y )
+y = f( x_test )
+#+end_src
+
+   - it's simply a matter of getting x_test in ther
+   - this can be done by modifying the datascibowl_reader slightly
+   - for now I can test it on the training data in the ipy notebook
+   - good news is, class probs are predicted for each observation
+
+** NEXT [#A] Setup validation set for prediction
    :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-02-15 Sun 22:28]
+   - State "NEXT"       from ""           [2015-02-16 Mon 20:46]
    :END:      
-** TODO [#B] Data augmentation
-   -
+   - could setup a function/class to writie the output data
+   - basically use what's in
+     http://localhost:8888/notebooks/test_data_setup_for_pred.ipynb
+   - in place of the per directory image fiel reading in the
+     DataSciBowl_Reader class and save to a .pkl
+   - predict on the np array with the good BGD softmax
+
+** NEXT [#B] Get predictions on validation set and submit
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-16 Mon 20:53]
+   :END:      
+   - https://groups.google.com/forum/#!searchin/pylearn-users/predict/pylearn-users/d2WUUdA2_go/G73pGmWqm38J
+   - For mlp, this extends my simple example
+     - https://github.com/lisa-lab/pylearn2/blob/master/pylearn2/scripts/mlp/predict_csv.py
+     - just use classification prediction with float and row
+       names (row names being the image file name)
+   - make sure data preprocessed with same settings as the
+     model was used to fit!! e.g. size, center
 
 ** TODO [#B] Get running on GPU/desktop
    -
-** Even obs per class
-** NEXT Implement the classifier cost function in monitoring
+** TODO [#B] Data augmentation
+   -
+
+** TODO [#B] Then simple BGD and SGD again on softmax again
+   
+** TODO How to implement CNN
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-16 Mon 11:46]
+   :END:      
+   - layers
+*** first check out multilayer perceptrons
+     - http://localhost:8888/notebooks/pylearn2_fork/pylearn2/scripts/tutorials/multilayer_perceptron/multilayer_perceptron.ipynb
+     - The MLP makes a weak assumption on the model, that,
+       generally speaking, the inputs map to outputs via the
+       composition of several functions.
+
+       A related issue with MLPs is that they have many
+       configuration options. The model itself imposes
+       design decisions such as what type of function to use
+       for each layer, the dimensionality of each layer.
+       Also, the log likelihood is no longer generally
+       concave, so the choice of optimization procedure
+       matters more than it did with softmax regression.
+       These configuration options are known as
+       "hyperparameters." Choosing the right hyperparameters
+       is an open and exciting research problem
+
+       To show how the MLP is specified via the yaml
+
+       Model: !obj:pylearn2.models.mlp.MLP {
+           layers: [
+                 !obj:pylearn2.models.mlp.Sigmoid {
+                     layer_name: 'h0',
+                     dim: 500,
+                     sparse_init: 15,
+                 }, !obj:pylearn2.models.mlp.Softmax {
+                     layer_name: 'y',
+                     n_classes: 10,
+                     irange: 0.
+                 }
+                ],
+           nvis: 784,
+       },
+*** then cnn
+    - http://deeplearning.net/tutorial/lenet.html great explanation
+    - http://localhost:8888/notebooks/pylearn2_fork/pylearn2/scripts/tutorials/convolutional_network/convolutional_network.ipynb
+    - example settings
+      - https://groups.google.com/forum/#!topic/pylearn-users/ZVbIQGh0YMQ
+    - CNN is simply MLP with slight translation invariance
+    - this is good for our image recognition problem
+    - this is set up similar to MLP, but we use
+      'input_space' instead of 'nvis', which preserves
+      topological significance. nvis is shorthand for
+      vectorspace(n), i.e. right now my images are being
+      converted to vector representation! humbug
+    - the yaml setup file in the CNN tutorial is useful to
+      refer to,
+      - conv rectified layers are used
+      - and 
+
+** TODO [#B] Even obs per class?
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-16 Mon 11:41]
+   :END:      
+** TODO [#C] Remove the unnecessary reshapes
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-16 Mon 10:06]
+   :END:      
+   - also test reshape
+   - does
+     | A | A | A |
+     | B | B | B |
+     reshape(6,1) become
+     | A | A | A | B | B | B |
+     and that reshape(3,2) become
+     | A | A | A |
+     | B | B | B |
+     ?
+
+** NEXT Research on CNN application
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-16 Mon 11:11]
+   :END:      
+   See [[http://www.cs.toronto.edu/~fritz/absps/imagenet.pdf][krizhevsky et al]]
+   - [[http://ufldl.stanford.edu/wiki/index.php/Softmax_Regression][Here]] is a good wiki on softmax
+     - it's use is for mutually exclusive multiclass problems
+     - in the 2 class problem it simplifies to logistic regression
+   - The parameters are learned by optimizing the cost
+     function using an itertive algorithm, such as gradient
+     descent. Note that such an optimization algorithm can
+     be used for many cost functions, such as those applying
+     to K-means, SVM, Lasso.
+     - the cost function for softmax with weight decay, is
+       some equation
+     - [[http://research.microsoft.com/pubs/192769/tricks-2012.pdf][bottou]] provides some good info on SGD
+       - it should be used when training time is the bottleneck
+     - [[http://leon.bottou.org/slides/largescale/lstut.pdf][more from bottou]], SGD with mnist as example
+   - Convolutional layers?
+   - Kernals and neurons?
+   - Dropout
+   - softmax params
+     - We trained our models using stochastic gradient
+       descent with a batch size of 128 examples, momentum
+       of 0.9, and weight decay of 0.0005.
+   - 
+** Batch size, momentum optimization
+   -
+
+** TODO [#C] Thresholded observations?
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-16 Mon 11:11]
+   :END:      
+   - I thought softmax didn't learn 0 and 1 well, this
+     should perform poorly
+** TODO Implement the classifier cost function in monitoring
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-15 Sun 22:10]
    :END:      
@@ -1482,7 +1719,7 @@ training_seconds_this_epoch : 48.921041
    - softmax parameters
      - batch
      - irange
-** NEXT Understand the fitting monitor
+** TODO Understand the fitting monitor
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-15 Sun 22:14]
    :END:      
@@ -1537,7 +1774,7 @@ Monitoring step:
 	~misclass~
 	~nll~
 
-** NEXT Fit more models/Combinations to try
+** TODO Fit more models/Combinations to try
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-15 Sun 22:14]
    :END:      
