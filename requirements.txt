@@ -1,3 +1,4 @@
+Cython==0.22
 Jinja2==2.7.3
 MarkupSafe==0.23
 Pillow==2.7.0
@@ -10,10 +11,11 @@ ipython==2.3.1
 matplotlib==1.4.2
 mock==1.0.1
 nose==1.3.4
+numexpr==2.4
 numpy==1.9.1
 pandas==0.15.2
 pyaml==14.12.10
--e git+git@github.com:jo-tham/pylearn2.git@20e32ff81d4679c08356ee4ba4fc40a5a51776bc#egg=pylearn2-origin/datascibowl
+-e git+git@github.com:jo-tham/pylearn2.git@e389052f6b9477540eb82e3ded650f55ca7f5b9a#egg=pylearn2-origin/datascibowl
 pyparsing==2.0.3
 python-dateutil==2.4.0
 pytz==2014.10
@@ -22,5 +24,6 @@ scikit-image==0.10.1
 scikit-learn==0.15.2
 scipy==0.14.1
 six==1.9.0
+tables==3.1.1
 tornado==4.0.2
 wsgiref==0.1.2

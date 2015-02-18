@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [11/24]
+* TODO Blog topics/Notes [12/25]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -1462,7 +1462,7 @@ training_seconds_this_epoch : 48.921041
    :END:      
    - this also improves misclass from about .75 to .65
    - probably worth keeping
-** DONE [#A] Try SGD
+** DONE Try SGD
    CLOSED: [2015-02-16 Mon 17:07]
    :LOGBOOK:  
    - State "DONE"       from "NEXT"       [2015-02-16 Mon 17:07]
@@ -1531,7 +1531,7 @@ training_seconds_this_epoch : 48.921041
    But got better results with BGD (i.e. misclass rate of
    0.8x with SGD).
 
-** DONE [#A] Get predictions on training set
+** DONE Get predictions on training set
    CLOSED: [2015-02-16 Mon 20:50]
    :LOGBOOK:  
    - State "DONE"       from "NEXT"       [2015-02-16 Mon 20:50]
@@ -1564,7 +1564,7 @@ y = f( x_test )
    - for now I can test it on the training data in the ipy notebook
    - good news is, class probs are predicted for each observation
 
-** DONE [#A] Setup validation set for prediction
+** DONE Setup validation set for prediction
    CLOSED: [2015-02-17 Tue 08:43]
    :LOGBOOK:  
    - State "DONE"       from "NEXT"       [2015-02-17 Tue 08:43]
@@ -1581,6 +1581,7 @@ y = f( x_test )
     - get numexpr Cython and tables, hdf5 from package manager
     - then see
       http://www.shocksolution.com/2010/01/storing-large-numpy-arrays-on-disk-python-pickle-vs-hdf5adsf/
+    - which works nicely
 #+begin_src python :noeval
 import tables
 h5file = tables.openFile('test.h5', mode='w', title="Test Array")
@@ -1589,8 +1590,10 @@ h5file.createArray(root, "test", a)
 h5file.close()
 #+end_src
 
-** NEXT [#B] Get predictions on validation set and submit
+** DONE Get predictions on validation set and submit
+   CLOSED: [2015-02-17 Tue 22:47]
    :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-02-17 Tue 22:47]
    - State "NEXT"       from ""           [2015-02-16 Mon 20:53]
    :END:      
    - https://groups.google.com/forum/#!searchin/pylearn-users/predict/pylearn-users/d2WUUdA2_go/G73pGmWqm38J
@@ -1601,6 +1604,21 @@ h5file.close()
    - make sure data preprocessed with same settings as the
      model was used to fit!! e.g. size, center
 
+** NEXT [#A] Implement the classifier cost function in monitoring
+   :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2015-02-17 Tue 22:57]
+   - State "NEXT"       from ""           [2015-02-15 Sun 22:10]
+   :END:      
+   - 
+** NEXT [#A] Make the workflow better
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-17 Tue 22:47]
+   :END:      
+   - a class, or an ipynb
+   - yaml
+   - model
+   - predict
+   - save predictions
 ** TODO [#B] Get running on GPU/desktop
    -
 ** TODO [#B] Data augmentation
@@ -1687,12 +1705,8 @@ h5file.close()
       - conv rectified layers are used
       - and 
 
-** TODO [#B] Implement the classifier cost function in monitoring
-   :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-02-15 Sun 22:10]
-   :END:      
-   - 
 ** TODO [#B] parameter tuning
+   -
 ** TODO [#B] Even obs per class?
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-16 Mon 11:41]

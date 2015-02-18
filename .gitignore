@@ -4,3 +4,5 @@ ltxpng/*
 pylearn*
 /data/
 *.pkl
+/submission_softmax_shuf_ctr_03_test.csv.gz
+/test_data_centered.npy
