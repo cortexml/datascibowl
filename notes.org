@@ -1609,11 +1609,74 @@ h5file.close()
    - State "NEXT"       from "TODO"       [2015-02-17 Tue 22:57]
    - State "NEXT"       from ""           [2015-02-15 Sun 22:10]
    :END:      
-   - 
+From ian goodfellow on google groups, there are a few options:
+
+-Write a TrainExtension that adds one by calling Monitor.add_channel
+-Subclass Model and override get_monitoring_channels
+-Subclass Cost and override get_monitoring_channels
+
+If you're interested in modifying the library itself, it
+could be a good idea to make ModelExtensions support adding
+monitoring channels to the model's default
+get_monitoring_channels return value.
+
+So, at /pylearn2/train_extensions there is an example of a
+channel added, roc_auc, which I will use as reference.
+
+*** DONE Test usage of extra monitoring channels via extensions
+    CLOSED: [2015-02-19 Thu 07:57]
+    :LOGBOOK:  
+    - State "DONE"       from ""           [2015-02-19 Thu 07:57]
+    :END:      
+
+First I will simply try using that channel in a monitor. See
+the example in ~sr_train_07.yaml~. It simply adds the following
+
+#+BEGIN_SRC sh :noeval
+    extensions: [
+	!obj:pylearn2.train_extensions.roc_auc.RocAucChannel {
+	    channel_name: 'roc_auc'
+	}
+    ],
+#+END_SRC
+
+*** Add multiclass log loss
+
+#+begin_src python :noeval
+def multiclass_log_loss(y_true, y_pred, eps=1e-15):
+    """Multi class version of Logarithmic Loss metric.
+    https://www.kaggle.com/wiki/MultiClassLogLoss
+
+    Parameters
+    ----------
+    y_true : array, shape = [n_samples]
+            true class, intergers in [0, n_classes - 1)
+    y_pred : array, shape = [n_samples, n_classes]
+
+    Returns
+    -------
+    loss : float
+    """
+    predictions = np.clip(y_pred, eps, 1 - eps)
+
+    # normalize row sums to 1
+    predictions /= predictions.sum(axis=1)[:, np.newaxis]
+
+    actual = np.zeros(y_pred.shape)
+    n_samples = actual.shape[0]
+    actual[np.arange(n_samples), y_true.astype(int)] = 1
+    vectsum = np.sum(actual * np.log(predictions))
+    loss = -1.0 / n_samples * vectsum
+    return loss
+
+#+end_src
+
+
 ** NEXT [#A] Make the workflow better
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-17 Tue 22:47]
    :END:      
+   - use % locals() in ipynb for yaml updates?
    - a class, or an ipynb
    - yaml
    - model
@@ -1632,6 +1695,7 @@ h5file.close()
    - State "NEXT"       from ""           [2015-02-16 Mon 11:46]
    :END:      
    - layers
+   - [[http://www.cifasis-conicet.gov.ar/granitto/ECI2014/3.ApunteNeuralNetworks.pdf][some more tips and tricks]]
 *** first check out multilayer perceptrons
      - http://localhost:8888/notebooks/pylearn2_fork/pylearn2/scripts/tutorials/multilayer_perceptron/multilayer_perceptron.ipynb
      - The MLP makes a weak assumption on the model, that,
