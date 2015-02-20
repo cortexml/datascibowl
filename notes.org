@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [12/25]
+* TODO Blog topics/Notes [12/26]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -1604,10 +1604,9 @@ h5file.close()
    - make sure data preprocessed with same settings as the
      model was used to fit!! e.g. size, center
 
-** NEXT [#A] Implement the classifier cost function in monitoring
+** NEXT [#A] Implement the classifier cost function in monitoring [2/3]
    :LOGBOOK:  
-   - State "NEXT"       from "TODO"       [2015-02-17 Tue 22:57]
-   - State "NEXT"       from ""           [2015-02-15 Sun 22:10]
+   CLOCK: [2015-02-19 Thu 20:40]--[2015-02-19 Thu 20:40] =>  0:00
    :END:      
 From ian goodfellow on google groups, there are a few options:
 
@@ -1640,23 +1639,20 @@ the example in ~sr_train_07.yaml~. It simply adds the following
     ],
 #+END_SRC
 
-*** Add multiclass log loss
+*** DONE Research monitoring channel implementation
+    CLOSED: [2015-02-19 Thu 22:22]
+    :LOGBOOK:  
+    - State "DONE"       from "NEXT"       [2015-02-19 Thu 22:22]
+    CLOCK: [2015-02-19 Thu 20:40]--[2015-02-19 Thu 22:22] =>  1:42
+    - State "NEXT"       from ""           [2015-02-19 Thu 20:10]
+    :END:      
+    - cool find, C-c C-x C-j goes to currently clocked in task
+      
+Here let's take a look at the multiclass log loss function.
 
+#+NAME: multiclass_log_loss
 #+begin_src python :noeval
 def multiclass_log_loss(y_true, y_pred, eps=1e-15):
-    """Multi class version of Logarithmic Loss metric.
-    https://www.kaggle.com/wiki/MultiClassLogLoss
-
-    Parameters
-    ----------
-    y_true : array, shape = [n_samples]
-            true class, intergers in [0, n_classes - 1)
-    y_pred : array, shape = [n_samples, n_classes]
-
-    Returns
-    -------
-    loss : float
-    """
     predictions = np.clip(y_pred, eps, 1 - eps)
 
     # normalize row sums to 1
@@ -1668,9 +1664,183 @@ def multiclass_log_loss(y_true, y_pred, eps=1e-15):
     vectsum = np.sum(actual * np.log(predictions))
     loss = -1.0 / n_samples * vectsum
     return loss
+#+end_src
+
+That's straight forward enough. As for adding a monitoring
+extension to pylearn, am referring to the roc_auc. It is
+using y and y_hat. Exactly what are these and what format do
+they take so I can appropriately feed them to the MLL?
+
+I put a ~pdb.set_trace~ in the roc_auc monitor to find out.
+
+#+begin_src python :noeval
+y = T.argmax(target, axis=1)
+y_hat = model.fprop(state)[:, self.positive_class_index]
+#+end_src
+
+#+begin_src python :noeval
+(Pdb) p type(y)
+<class 'theano.tensor.var.TensorVariable'>
+(Pdb) p type(y_hat)
+<class 'theano.tensor.var.TensorVariable'>
+#+end_src
+
+So these are simply symbols. 
+
+Moving forward a few lines we come across
+
+#+begin_src python :noeval
+#...
+    pos = T.eq(y, self.positive_class_index)
+    neg = T.eq(y, self.negative_class_index)
+    keep = T.add(pos, neg).nonzero()
+    y = T.eq(y[keep], self.positive_class_index)
+    y_hat = y_hat[keep]
+
+roc_auc = RocAucScoreOp(self.channel_name_suffix)(y, y_hat)
+roc_auc = T.cast(roc_auc, config.floatX)
+#+end_src
+
+Take note that for roc_auc, posotive and negative cases were
+identified.
+
+~RocAucScoreOp~ is a theano operation wrapper to sklearn's
+roc_auc metric. In other words we need to get our metric to
+work using theano's symbolic expressions.
+
+That doesn't do any calculcations yet, just further sets up
+the theano components. ~cast~ in the next line simply
+changes its type to a flot.
+
+Finally, the tensor is passed to ~monitor.add_channel~
+
+#+begin_src python :noeval
+model.monitor.add_channel(name=channel_name,
+                          ipt=(state, target),
+                          val=roc_auc,
+                          data_specs=(m_space, m_source),
+                          dataset=dataset)
+#+end_src
+
+with ~theano.pp~ we can nicely print the symbolic
+expressions. I didn't import that so can't do it right now.
+
+Continuing with pdb
+
+Our ~roc_auc~ is now a float operation, but it's not being
+used yet.
+
+Late hours approach and this is where I would retire. So
+I'll make a leap to ~monitor.add_channel~ and see what's
+going on. After all, that's as far as I need to get.
+
+#+begin_src python :noeval
+add_channel(self, name, ipt, val, dataset=None, prereqs=None,
+            data_specs=None):
+"""
+Asks the monitor to start tracking a new value.  Can be called
+even after the monitor is already in use.
+
+Parameters
+----------
+name : str
+    The display name in the monitor.
+ipt : tensor_like
+    The symbolic tensor which should be clamped to the data.
+    (or a list/tuple containing symbolic tensors, following the
+    data_specs)
+val : tensor_like
+    The value (function of `ipt`) to be tracked.
+dataset : pylearn2.datasets.Dataset
+    Which dataset to compute this channel on
+prereqs : list of callables that take a list of numpy tensors
+    Each prereq must be called exactly once per each new batch
+    of data drawn *from dataset* before the channel value is
+    computed if two channels provide a prereq with exactly the
+    same id, that prereq will only be called once
+data_specs : (space, source) pair
+    Identifies the order, format and semantics of ipt
+"""
 
 #+end_src
 
+I only need to get the proper tensor expressions set up for
+ipt and val. And from the looks of things, I only need to
+adjust the theano wrapper of roc_auc to return an expression
+for MLL.
+
+It would be good to see another example. But I can't find.
+Hold on now - here's the one for the misclassification rate.
+
+#+begin_src python :noeval
+if (targets is not None):
+    if ((not self._has_binary_target) or
+            self.binary_target_dim == 1):
+        # if binary_target_dim>1, the misclass rate is ill-defined
+        y_hat = T.argmax(state, axis=1)
+        y = (targets.reshape(y_hat.shape)
+             if self._has_binary_target
+             else T.argmax(targets, axis=1))
+        misclass = T.neq(y, y_hat).mean()
+        misclass = T.cast(misclass, config.floatX)
+        rval['misclass'] = misclass
+    rval['nll'] = self.cost(Y_hat=state, Y=targets)
+#+end_src
+
+I think that exemplifies how straight forward this can be.
+The proportion of nonmatching elements of the observed y and
+predicted y_hat from the total number of observations is the
+misclassifcation rate.
+
+For me, y_hat must be probabilities, not classes. Om that
+case it is easy, remove the argmax line, which decides
+assigns a class based on the maximum probability.
+
+In other words, replace the 
+
+#+begin_src python :noeval
+misclass = T.neq(y, y_hat).mean()
+#+end_src
+
+with a tensor expression for multiclass log loss.
+[[multiclass_log_loss]]
+
+*** NEXT Implement theano multiclass log loss
+    :LOGBOOK:  
+    - State "NEXT"       from "TODO"       [2015-02-19 Thu 22:23]
+    :END:      
+So let's break down the MLL. I went through it line by line
+in [[file:multiclass_log_loss_test.ipynb]]
+
+#+begin_src python :noeval
+def multiclass_log_loss(y_true, y_pred, eps=1e-15):
+    # clip values to >0 and <1 - needed?
+    predictions = np.clip(y_pred, eps, 1 - eps)
+
+    # normalize row sums to 1
+    predictions /= predictions.sum(axis=1)[:, np.newaxis]
+
+    # array, same shape as predictions, with 'true' predictions
+    actual = np.zeros(y_pred.shape)
+    n_samples = actual.shape[0]
+    actual[np.arange(n_samples), y_true.astype(int)] = 1
+
+    # elementwise product of log(predictions) and true classes
+    vectsum = np.sum(actual * np.log(predictions))
+
+    loss = -1.0 / n_samples * vectsum
+    return loss
+#+end_src
+
+See the [[http://deeplearning.net/software/theano/tutorial/index.html#tutorial][theano tutorial]] for a start.
+
+My last question - where is a function made from the tensor
+and evaluated?
+
+Also, be careful of the shape of y, it may be a column/row.
+
+Be aware of broadcasting, and the [[http://deeplearning.net/software/theano/library/tensor/basic.html][default tensor
+functionality]], which should be enough for my purposes.
 
 ** NEXT [#A] Make the workflow better
    :LOGBOOK:  
@@ -1771,7 +1941,10 @@ def multiclass_log_loss(y_true, y_pred, eps=1e-15):
 
 ** TODO [#B] parameter tuning
    -
-** TODO [#B] Even obs per class?
+** TODO [#C] other stopping riles
+   - epochs
+   - other monitor costs
+** TODO [#C] Even obs per class?
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-16 Mon 11:41]
    :END:      
