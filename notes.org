@@ -1842,6 +1842,38 @@ Also, be careful of the shape of y, it may be a column/row.
 Be aware of broadcasting, and the [[http://deeplearning.net/software/theano/library/tensor/basic.html][default tensor
 functionality]], which should be enough for my purposes.
 
+#+begin_src python :noeval
+def multiclass_log_loss(y_true, y_pred):
+    predictions = T.clip(y_pred, 1e-15, 1 - 1e-15)
+    predictions /= predictions.sum(axis=1)[:, np.newaxis]
+    # row_sums is matrix size of predictions with each element
+    # as that rows sums, or a column which broadcasts over rows
+    # as the sum
+    # row_sums = 
+    predictions = predictions / row_sums
+
+    actual = tensor.matrix(name='y_true', dtype=config.floatX)
+    n_samples = actual.shape[0]
+    actual[T.arange(n_samples), y_true.astype('int32')] = 1
+
+    vectsum = actual * predictions.log()
+    loss = -1.0 / n_samples * vectsum
+
+    ????
+#+end_src
+
+Where will we pass epsilon? We can put constants in our
+theano expressions
+
+#+begin_src python :noeval
+from theano import tensor as T, function
+x = T.dmatrix('x')
+s = 1 / (1 + T.exp(-x))
+logistic = function([x], s)
+logistic([[0, 1], [-1, -2]])
+#+end_src
+
+
 ** NEXT [#A] Make the workflow better
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-17 Tue 22:47]
