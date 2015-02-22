@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [12/26]
+* TODO Blog topics/Notes [13/26]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -1604,8 +1604,10 @@ h5file.close()
    - make sure data preprocessed with same settings as the
      model was used to fit!! e.g. size, center
 
-** NEXT [#A] Implement the classifier cost function in monitoring [2/3]
+** DONE [#A] Implement the classifier cost function in monitoring [3/3]
+   CLOSED: [2015-02-21 Sat 22:48]
    :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-02-21 Sat 22:48]
    CLOCK: [2015-02-19 Thu 20:40]--[2015-02-19 Thu 20:40] =>  0:00
    :END:      
 From ian goodfellow on google groups, there are a few options:
@@ -1804,8 +1806,10 @@ misclass = T.neq(y, y_hat).mean()
 
 with a tensor expression for multiclass log loss.
 [[multiclass_log_loss]]
-*** NEXT Implement theano multiclass log loss
+*** DONE Implement theano multiclass log loss
+    CLOSED: [2015-02-21 Sat 22:51]
     :LOGBOOK:  
+    - State "DONE"       from "NEXT"       [2015-02-21 Sat 22:51]
     CLOCK: [2015-02-21 Sat 13:11]
     - State "NEXT"       from "TODO"       [2015-02-19 Thu 22:23]
     :END:      
@@ -1884,6 +1888,384 @@ s = 1 / (1 + T.exp(-x))
 logistic = function([x], s)
 logistic([[0, 1], [-1, -2]])
 #+end_src
+
+Well, I did implement MLL in theano expressions. But it
+turns out it was unnecessary. As the calculation need not be
+in theano expressions, as the values are passed through
+theano to the actual score function. Take a look
+
+#+begin_src sh :results table code replace output 
+fileOne="./pylearn2_fork/pylearn2/train_extensions/multiclass_log_loss.py"
+fileTwo="./pylearn2_fork/pylearn2/train_extensions/roc_auc.py"
+diff -y $fileOne $fileTwo
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC sh
+"""								"""
+TrainExtension subclass for calculating multiclass log loss o |	TrainExtension subclass for calculating ROC AUC scores on mon
+dataset(s), reported via monitor channels.			dataset(s), reported via monitor channels.
+"""								"""
+
+__author__ = "Jotham Apaloo"				      |	__author__ = "Steven Kearnes"
+__copyright__ = "Copyright 2015"			      |	__copyright__ = "Copyright 2014, Stanford University"
+__license__ = "TBD"					      |	__license__ = "3-clause BSD"
+__maintainer__ = "Jotham Apaloo"			      |	__maintainer__ = "Steven Kearnes"
+
+import numpy as np						import numpy as np
+							      >	try:
+							      >	    from sklearn.metrics import roc_auc_score
+							      >	except ImportError:
+							      >	    roc_auc_score = None
+							      >
+import theano							import theano
+import pdb						      <
+from theano import gof, config					from theano import gof, config
+from theano import tensor as T					from theano import tensor as T
+
+from pylearn2.train_extensions import TrainExtension		from pylearn2.train_extensions import TrainExtension
+
+def multiclass_log_loss(y_true, y_pred, eps=1e-15):	      <
+    """Multi class version of Logarithmic Loss metric.	      <
+    https://www.kaggle.com/wiki/MultiClassLogLoss	      <
+							      <
+    Parameters						      <
+    ----------						      <
+    y_true : array, shape = [n_samples, n_classes]	      <
+            true class, column index with unit value = true   <
+            class for sample				      <
+    y_pred : array, shape = [n_samples, n_classes]	      <
+							      <
+    Returns						      <
+    -------						      <
+    loss : float					      <
+    """							      <
+    pdb.set_trace()					      <
+    predictions = np.clip(y_pred, eps, 1 - eps)		      <
+							      <
+    # normalize row sums to 1				      <
+    predictions /= predictions.sum(axis=1)[:, np.newaxis]     <
+							      <
+    actual = y_true					      <
+    n_samples = actual.shape[0]				      <
+    #actual[np.arange(n_samples), y_true.astype(int)] = 1     <
+    vectsum = np.sum(y_true * np.log(predictions))	      <
+    loss = -1.0 / n_samples * vectsum			      <
+    return loss						      <
+							      <
+
+class MulticlassLogLossOp(gof.Op):			      |	class RocAucScoreOp(gof.Op):
+    """								    """
+    Brief description.					      |	    Theano Op wrapping sklearn.metrics.roc_auc_score.
+
+    Parameters							    Parameters
+    ----------							    ----------
+    name : str, optional (default 'mll')		      |	    name : str, optional (default 'roc_auc')
+        Name of this Op.					        Name of this Op.
+    use_c_code : WRITEME					    use_c_code : WRITEME
+    """								    """
+    def __init__(self, name='mll', use_c_code=theano.config.c |	    def __init__(self, name='roc_auc', use_c_code=theano.conf
+        super(MulticlassLogLossOp, self).__init__(use_c_code) |	        super(RocAucScoreOp, self).__init__(use_c_code)
+        self.name = name					        self.name = name
+
+    def make_node(self, y_true, y_score):			    def make_node(self, y_true, y_score):
+        """							        """
+        Calculate mll.					      |	        Calculate ROC AUC score.
+
+        Parameters						        Parameters
+        ----------						        ----------
+        y_true : tensor_like					        y_true : tensor_like
+            Target class labels.				            Target class labels.
+        y_score : tensor_like					        y_score : tensor_like
+            Predicted probabilities for all classes class.    |	            Predicted class labels or probabilities for posit
+        """							        """
+        y_true = T.as_tensor_variable(y_true)			        y_true = T.as_tensor_variable(y_true)
+        y_score = T.as_tensor_variable(y_score)			        y_score = T.as_tensor_variable(y_score)
+        output = [T.scalar(name=self.name, dtype=config.float	        output = [T.scalar(name=self.name, dtype=config.float
+        return gof.Apply(self, [y_true, y_score], output)	        return gof.Apply(self, [y_true, y_score], output)
+
+    def perform(self, node, inputs, output_storage):		    def perform(self, node, inputs, output_storage):
+        """							        """
+        Calculate mll.					      |	        Calculate ROC AUC score.
+
+        Parameters						        Parameters
+        ----------						        ----------
+        node : Apply instance					        node : Apply instance
+            Symbolic inputs and outputs.			            Symbolic inputs and outputs.
+        inputs : list						        inputs : list
+            Sequence of inputs.					            Sequence of inputs.
+        output_storage : list					        output_storage : list
+            List of mutable 1-element lists.			            List of mutable 1-element lists.
+        """							        """
+							      >	        if roc_auc_score is None:
+							      >	            raise RuntimeError("Could not import from sklearn
+        y_true, y_score = inputs				        y_true, y_score = inputs
+        try:							        try:
+            mll = multiclass_log_loss(y_true, y_score)	      |	            roc_auc = roc_auc_score(y_true, y_score)
+        except ValueError:					        except ValueError:
+            mll = np.nan				      |	            roc_auc = np.nan
+        output_storage[0][0] = theano._asarray(mll, dtype=con |	        output_storage[0][0] = theano._asarray(roc_auc, dtype
+
+
+class MLLChannel(TrainExtension):			      |	class RocAucChannel(TrainExtension):
+    """								    """
+    Adds a mll channel to the monitor for each monitoring dat |	    Adds a ROC AUC channel to the monitor for each monitoring
+
+    This monitor MAY return nan unless all classes are repres |	    This monitor will return nan unless both classes are repr
+    y_true. For this reason, it is recommended to set monitor	    y_true. For this reason, it is recommended to set monitor
+    to 1, especially when using unbalanced datasets.		    to 1, especially when using unbalanced datasets.
+
+    Parameters							    Parameters
+    ----------							    ----------
+    channel_name_suffix : str, optional (default 'mll')	      |	    channel_name_suffix : str, optional (default 'roc_auc')
+        Channel name suffix.					        Channel name suffix.
+    positive_class_index : int, optional (default 1)		    positive_class_index : int, optional (default 1)
+        Index of positive class in predicted values.		        Index of positive class in predicted values.
+    negative_class_index : int or None, optional (default Non	    negative_class_index : int or None, optional (default Non
+        Index of negative class in predicted values for calcu	        Index of negative class in predicted values for calcu
+        one vs. one performance. If None, uses all examples n	        one vs. one performance. If None, uses all examples n
+        positive class (one vs. the rest).			        positive class (one vs. the rest).
+    """								    """
+    def __init__(self, channel_name_suffix='mll', positive_cl |	    def __init__(self, channel_name_suffix='roc_auc', positiv
+                 negative_class_index=None):			                 negative_class_index=None):
+        self.channel_name_suffix = channel_name_suffix		        self.channel_name_suffix = channel_name_suffix
+        self.positive_class_index = positive_class_index	        self.positive_class_index = positive_class_index
+        self.negative_class_index = negative_class_index	        self.negative_class_index = negative_class_index
+
+    def setup(self, model, dataset, algorithm):			    def setup(self, model, dataset, algorithm):
+        """							        """
+        Add mll channels for monitoring dataset(s) to model.m |	        Add ROC AUC channels for monitoring dataset(s) to mod
+
+        Parameters						        Parameters
+        ----------						        ----------
+        model : object						        model : object
+            The model being trained.				            The model being trained.
+        dataset : object					        dataset : object
+            Training dataset.					            Training dataset.
+        algorithm : object					        algorithm : object
+            Training algorithm.					            Training algorithm.
+        """							        """
+        m_space, m_source = model.get_monitoring_data_specs()	        m_space, m_source = model.get_monitoring_data_specs()
+        state, target = m_space.make_theano_batch()		        state, target = m_space.make_theano_batch()
+
+        y = target					      |	        y = T.argmax(target, axis=1)
+        y_hat = model.fprop(state)			      |	        y_hat = model.fprop(state)[:, self.positive_class_ind
+
+        mll = MulticlassLogLossOp(self.channel_name_suffix)(y |	        # one vs. the rest
+        mll = T.cast(mll, config.floatX)		      |	        if self.negative_class_index is None:
+							      >	            y = T.eq(y, self.positive_class_index)
+							      >
+							      >	        # one vs. one
+							      >	        else:
+							      >	            pos = T.eq(y, self.positive_class_index)
+							      >	            neg = T.eq(y, self.negative_class_index)
+							      >	            keep = T.add(pos, neg).nonzero()
+							      >	            y = T.eq(y[keep], self.positive_class_index)
+							      >	            y_hat = y_hat[keep]
+
+							      >	        roc_auc = RocAucScoreOp(self.channel_name_suffix)(y, 
+							      >	        roc_auc = T.cast(roc_auc, config.floatX)
+        for dataset_name, dataset in algorithm.monitoring_dat	        for dataset_name, dataset in algorithm.monitoring_dat
+            if dataset_name:					            if dataset_name:
+                channel_name = '{0}_{1}'.format(dataset_name,	                channel_name = '{0}_{1}'.format(dataset_name,
+                                                self.channel_	                                                self.channel_
+            else:						            else:
+                channel_name = self.channel_name_suffix		                channel_name = self.channel_name_suffix
+            model.monitor.add_channel(name=channel_name,	            model.monitor.add_channel(name=channel_name,
+                                      ipt=(state, target),	                                      ipt=(state, target),
+                                      val=mll,		      |	                                      val=roc_auc,
+                                      data_specs=(m_space, m_	                                      data_specs=(m_space, m_
+                                      dataset=dataset)		                                      dataset=dataset)
+"""								"""
+TrainExtension subclass for calculating multiclass log loss o |	TrainExtension subclass for calculating ROC AUC scores on mon
+dataset(s), reported via monitor channels.			dataset(s), reported via monitor channels.
+"""								"""
+
+__author__ = "Jotham Apaloo"				      |	__author__ = "Steven Kearnes"
+__copyright__ = "Copyright 2015"			      |	__copyright__ = "Copyright 2014, Stanford University"
+__license__ = "TBD"					      |	__license__ = "3-clause BSD"
+__maintainer__ = "Jotham Apaloo"			      |	__maintainer__ = "Steven Kearnes"
+
+import numpy as np						import numpy as np
+							      >	try:
+							      >	    from sklearn.metrics import roc_auc_score
+							      >	except ImportError:
+							      >	    roc_auc_score = None
+							      >
+import theano							import theano
+import pdb						      <
+from theano import gof, config					from theano import gof, config
+from theano import tensor as T					from theano import tensor as T
+
+from pylearn2.train_extensions import TrainExtension		from pylearn2.train_extensions import TrainExtension
+
+def multiclass_log_loss(y_true, y_pred, eps=1e-15):	      <
+    """Multi class version of Logarithmic Loss metric.	      <
+    https://www.kaggle.com/wiki/MultiClassLogLoss	      <
+							      <
+    Parameters						      <
+    ----------						      <
+    y_true : array, shape = [n_samples, n_classes]	      <
+            true class, column index with unit value = true   <
+            class for sample				      <
+    y_pred : array, shape = [n_samples, n_classes]	      <
+							      <
+    Returns						      <
+    -------						      <
+    loss : float					      <
+    """							      <
+    pdb.set_trace()					      <
+    predictions = np.clip(y_pred, eps, 1 - eps)		      <
+							      <
+    # normalize row sums to 1				      <
+    predictions /= predictions.sum(axis=1)[:, np.newaxis]     <
+							      <
+    actual = y_true					      <
+    n_samples = actual.shape[0]				      <
+    #actual[np.arange(n_samples), y_true.astype(int)] = 1     <
+    vectsum = np.sum(y_true * np.log(predictions))	      <
+    loss = -1.0 / n_samples * vectsum			      <
+    return loss						      <
+							      <
+
+class MulticlassLogLossOp(gof.Op):			      |	class RocAucScoreOp(gof.Op):
+    """								    """
+    Brief description.					      |	    Theano Op wrapping sklearn.metrics.roc_auc_score.
+
+    Parameters							    Parameters
+    ----------							    ----------
+    name : str, optional (default 'mll')		      |	    name : str, optional (default 'roc_auc')
+        Name of this Op.					        Name of this Op.
+    use_c_code : WRITEME					    use_c_code : WRITEME
+    """								    """
+    def __init__(self, name='mll', use_c_code=theano.config.c |	    def __init__(self, name='roc_auc', use_c_code=theano.conf
+        super(MulticlassLogLossOp, self).__init__(use_c_code) |	        super(RocAucScoreOp, self).__init__(use_c_code)
+        self.name = name					        self.name = name
+
+    def make_node(self, y_true, y_score):			    def make_node(self, y_true, y_score):
+        """							        """
+        Calculate mll.					      |	        Calculate ROC AUC score.
+
+        Parameters						        Parameters
+        ----------						        ----------
+        y_true : tensor_like					        y_true : tensor_like
+            Target class labels.				            Target class labels.
+        y_score : tensor_like					        y_score : tensor_like
+            Predicted probabilities for all classes class.    |	            Predicted class labels or probabilities for posit
+        """							        """
+        y_true = T.as_tensor_variable(y_true)			        y_true = T.as_tensor_variable(y_true)
+        y_score = T.as_tensor_variable(y_score)			        y_score = T.as_tensor_variable(y_score)
+        output = [T.scalar(name=self.name, dtype=config.float	        output = [T.scalar(name=self.name, dtype=config.float
+        return gof.Apply(self, [y_true, y_score], output)	        return gof.Apply(self, [y_true, y_score], output)
+
+    def perform(self, node, inputs, output_storage):		    def perform(self, node, inputs, output_storage):
+        """							        """
+        Calculate mll.					      |	        Calculate ROC AUC score.
+
+        Parameters						        Parameters
+        ----------						        ----------
+        node : Apply instance					        node : Apply instance
+            Symbolic inputs and outputs.			            Symbolic inputs and outputs.
+        inputs : list						        inputs : list
+            Sequence of inputs.					            Sequence of inputs.
+        output_storage : list					        output_storage : list
+            List of mutable 1-element lists.			            List of mutable 1-element lists.
+        """							        """
+							      >	        if roc_auc_score is None:
+							      >	            raise RuntimeError("Could not import from sklearn
+        y_true, y_score = inputs				        y_true, y_score = inputs
+        try:							        try:
+            mll = multiclass_log_loss(y_true, y_score)	      |	            roc_auc = roc_auc_score(y_true, y_score)
+        except ValueError:					        except ValueError:
+            mll = np.nan				      |	            roc_auc = np.nan
+        output_storage[0][0] = theano._asarray(mll, dtype=con |	        output_storage[0][0] = theano._asarray(roc_auc, dtype
+
+
+class MLLChannel(TrainExtension):			      |	class RocAucChannel(TrainExtension):
+    """								    """
+    Adds a mll channel to the monitor for each monitoring dat |	    Adds a ROC AUC channel to the monitor for each monitoring
+
+    This monitor MAY return nan unless all classes are repres |	    This monitor will return nan unless both classes are repr
+    y_true. For this reason, it is recommended to set monitor	    y_true. For this reason, it is recommended to set monitor
+    to 1, especially when using unbalanced datasets.		    to 1, especially when using unbalanced datasets.
+
+    Parameters							    Parameters
+    ----------							    ----------
+    channel_name_suffix : str, optional (default 'mll')	      |	    channel_name_suffix : str, optional (default 'roc_auc')
+        Channel name suffix.					        Channel name suffix.
+    positive_class_index : int, optional (default 1)		    positive_class_index : int, optional (default 1)
+        Index of positive class in predicted values.		        Index of positive class in predicted values.
+    negative_class_index : int or None, optional (default Non	    negative_class_index : int or None, optional (default Non
+        Index of negative class in predicted values for calcu	        Index of negative class in predicted values for calcu
+        one vs. one performance. If None, uses all examples n	        one vs. one performance. If None, uses all examples n
+        positive class (one vs. the rest).			        positive class (one vs. the rest).
+    """								    """
+    def __init__(self, channel_name_suffix='mll', positive_cl |	    def __init__(self, channel_name_suffix='roc_auc', positiv
+                 negative_class_index=None):			                 negative_class_index=None):
+        self.channel_name_suffix = channel_name_suffix		        self.channel_name_suffix = channel_name_suffix
+        self.positive_class_index = positive_class_index	        self.positive_class_index = positive_class_index
+        self.negative_class_index = negative_class_index	        self.negative_class_index = negative_class_index
+
+    def setup(self, model, dataset, algorithm):			    def setup(self, model, dataset, algorithm):
+        """							        """
+        Add mll channels for monitoring dataset(s) to model.m |	        Add ROC AUC channels for monitoring dataset(s) to mod
+
+        Parameters						        Parameters
+        ----------						        ----------
+        model : object						        model : object
+            The model being trained.				            The model being trained.
+        dataset : object					        dataset : object
+            Training dataset.					            Training dataset.
+        algorithm : object					        algorithm : object
+            Training algorithm.					            Training algorithm.
+        """							        """
+        m_space, m_source = model.get_monitoring_data_specs()	        m_space, m_source = model.get_monitoring_data_specs()
+        state, target = m_space.make_theano_batch()		        state, target = m_space.make_theano_batch()
+
+        y = target					      |	        y = T.argmax(target, axis=1)
+        y_hat = model.fprop(state)			      |	        y_hat = model.fprop(state)[:, self.positive_class_ind
+
+        mll = MulticlassLogLossOp(self.channel_name_suffix)(y |	        # one vs. the rest
+        mll = T.cast(mll, config.floatX)		      |	        if self.negative_class_index is None:
+							      >	            y = T.eq(y, self.positive_class_index)
+							      >
+							      >	        # one vs. one
+							      >	        else:
+							      >	            pos = T.eq(y, self.positive_class_index)
+							      >	            neg = T.eq(y, self.negative_class_index)
+							      >	            keep = T.add(pos, neg).nonzero()
+							      >	            y = T.eq(y[keep], self.positive_class_index)
+							      >	            y_hat = y_hat[keep]
+
+							      >	        roc_auc = RocAucScoreOp(self.channel_name_suffix)(y, 
+							      >	        roc_auc = T.cast(roc_auc, config.floatX)
+        for dataset_name, dataset in algorithm.monitoring_dat	        for dataset_name, dataset in algorithm.monitoring_dat
+            if dataset_name:					            if dataset_name:
+                channel_name = '{0}_{1}'.format(dataset_name,	                channel_name = '{0}_{1}'.format(dataset_name,
+                                                self.channel_	                                                self.channel_
+            else:						            else:
+                channel_name = self.channel_name_suffix		                channel_name = self.channel_name_suffix
+            model.monitor.add_channel(name=channel_name,	            model.monitor.add_channel(name=channel_name,
+                                      ipt=(state, target),	                                      ipt=(state, target),
+                                      val=mll,		      |	                                      val=roc_auc,
+                                      data_specs=(m_space, m_	                                      data_specs=(m_space, m_
+                                      dataset=dataset)		                                      dataset=dataset)
+#+END_SRC
+
+It wasn't too much to get this working. It was a lot to
+stomach the fact that my MLL matched the objective
+function - the negative log likelihood.
+
+They are indeed one and the same. It even said so in the
+[[https://www.kaggle.com/wiki/MultiClassLogLoss][Kaggle]]
+
+#+begin_src 
+The metric is negative the log likelihood of the model
+#+end_src
+
+Oh well. I learned a great deal about Theano, at least.
+
+
 
 *** Issues
 One of the problems here is GPU processing is only working
