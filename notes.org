@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [14/27]
+* TODO Blog topics/Notes [15/27]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -2283,8 +2283,10 @@ with 32 bit values.
      submission
    - indicates overfitting
    - image augmentation will help, along with the CNN
-** NEXT [#A] Make the workflow better
+** DONE Make the workflow better
+   CLOSED: [2015-02-22 Sun 00:35]
    :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-02-22 Sun 00:35]
    - State "NEXT"       from ""           [2015-02-17 Tue 22:47]
    :END:      
 Expiriments are defined with yaml.
@@ -2297,8 +2299,16 @@ Can I move these notebooks to a new directory?
 Where are paths ill coded? 
 Data path is hard coded, doesn't matter relative to ipynb paths.
 
-** TODO [#B] Get running on GPU/desktop
-   -
+** NEXT [#A] Get running on GPU/desktop
+   :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2015-02-22 Sun 00:36]
+   :END:      
+   - create venv
+   - update requirements.txt, remove pylearn fork, ssh it over
+   - install reqs
+   - clone project repo
+   - ssh data over
+   - ssh theano config over, add gpu
 ** TODO [#B] Data augmentation
    -
 
