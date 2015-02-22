@@ -15,7 +15,7 @@ numexpr==2.4
 numpy==1.9.1
 pandas==0.15.2
 pyaml==14.12.10
--e git+git@github.com:jo-tham/pylearn2.git@e389052f6b9477540eb82e3ded650f55ca7f5b9a#egg=pylearn2-origin/datascibowl
+-e git+git@github.com:jo-tham/pylearn2.git@6a7d018b4c388617df57244e7df0b825839a1329#egg=pylearn2-origin/datascibowl
 pyparsing==2.0.3
 python-dateutil==2.4.0
 pytz==2014.10

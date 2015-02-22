@@ -2309,6 +2309,34 @@ Data path is hard coded, doesn't matter relative to ipynb paths.
    - clone project repo
    - ssh data over
    - ssh theano config over, add gpu
+
+#+begin_src sh :noeval
+mkproject -p /usr/bin/python2.7 2014-12-20_datascibowl
+#+end_src
+
+#+begin_src sh :noeval
+pip freeze > requirements.txt
+# delete fork of pylearn, we'll clone it later
+scp requirements.txt jotham@192.168.0.13:/home/jotham/projects/2014-12-20_datascibowl/requirements.txt
+#+end_src
+
+#+begin_src sh :noeval
+pip install numpy # have to install this for scikit-image
+pip install six # have to install this for scikit-image
+pip install numexp # have to install this for scikit-image
+pip install Cython # have to install this for scikit-image
+sudo pacman -S hdf5 # for pyhdf
+pip install -r requirements.txt
+git clone git:@gitlab.com:Jotham/20141220_datascibowl.git
+#+end_src
+
+#+begin_src sh :noeval
+scp -r data jotham@192.168.0.13:/home/jotham/projects/2014-12-20_datascibowl/
+scp -r competition_data jotham@192.168.0.13:/home/jotham/projects/2014-12-20_datascibowl/
+scp ~/.theanorc jotham@192.168.0.13:/home/jotham/.theanorc
+#+end_src
+
+
 ** TODO [#B] Data augmentation
    -
 
