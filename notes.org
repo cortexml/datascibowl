@@ -1804,9 +1804,9 @@ misclass = T.neq(y, y_hat).mean()
 
 with a tensor expression for multiclass log loss.
 [[multiclass_log_loss]]
-
 *** NEXT Implement theano multiclass log loss
     :LOGBOOK:  
+    CLOCK: [2015-02-21 Sat 13:11]
     - State "NEXT"       from "TODO"       [2015-02-19 Thu 22:23]
     :END:      
 So let's break down the MLL. I went through it line by line
@@ -1844,22 +1844,34 @@ functionality]], which should be enough for my purposes.
 
 #+begin_src python :noeval
 def multiclass_log_loss(y_true, y_pred):
-    predictions = T.clip(y_pred, 1e-15, 1 - 1e-15)
-    predictions /= predictions.sum(axis=1)[:, np.newaxis]
-    # row_sums is matrix size of predictions with each element
-    # as that rows sums, or a column which broadcasts over rows
-    # as the sum
-    # row_sums = 
-    predictions = predictions / row_sums
+    """Multi class version of Logarithmic Loss metric.
+    https://www.kaggle.com/wiki/MultiClassLogLoss
 
-    actual = tensor.matrix(name='y_true', dtype=config.floatX)
-    n_samples = actual.shape[0]
-    actual[T.arange(n_samples), y_true.astype('int32')] = 1
+    Parameters
+    ----------
+    y_true : array, shape = [n_samples]
+            true class, intergers in [0, n_classes - 1)
+    y_pred : array, shape = [n_samples, n_classes]
 
-    vectsum = actual * predictions.log()
-    loss = -1.0 / n_samples * vectsum
+    Returns
+    -------
+    loss : float
+    """
+    y_pred = T.matrix(dtype='float32')
+    y_true = T.matrix('y_true', dtype='int32')
+    y_true_square = T.matrix('y_true_square', dtype='int32')
+    eps = T.constant(1e-15, 'eps', dtype='float32')
 
-    ????
+    n_samples = y_pred.shape[0]
+    y_pred_clip = T.clip(y_pred, eps, 1-eps)
+    y_pred_row_sum = y_pred_clip.sum(axis=1)[:, np.newaxis]
+    y_pred_norm = y_pred_clip / y_pred_row_sum
+    y_true_square_ones = T.set_subtensor(y_true_square[T.arange(y_true.shape[0]), y_true.dimshuffle(1,0)], 1)
+    y_pred_log = T.log(y_pred_norm)
+    log_true_prod = y_true_square_ones * y_pred_log
+    loss = -1.0 / n_samples * log_true_prod.sum()
+
+    log_loss = function([y_pred, y_true, y_true_square], loss)
 #+end_src
 
 Where will we pass epsilon? We can put constants in our
@@ -1872,6 +1884,10 @@ s = 1 / (1 + T.exp(-x))
 logistic = function([x], s)
 logistic([[0, 1], [-1, -2]])
 #+end_src
+
+*** Issues
+One of the problems here is GPU processing is only working
+with 32 bit values.
 
 
 ** NEXT [#A] Make the workflow better
