@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [13/26]
+* TODO Blog topics/Notes [14/27]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -1604,12 +1604,16 @@ h5file.close()
    - make sure data preprocessed with same settings as the
      model was used to fit!! e.g. size, center
 
-** DONE [#A] Implement the classifier cost function in monitoring [3/3]
+** DONE Implement the classifier cost function in monitoring [3/3]
    CLOSED: [2015-02-21 Sat 22:48]
    :LOGBOOK:  
    - State "DONE"       from "NEXT"       [2015-02-21 Sat 22:48]
    CLOCK: [2015-02-19 Thu 20:40]--[2015-02-19 Thu 20:40] =>  0:00
    :END:      
+Summary: Theano is cool. Read carefully. I will use the
+builtin NLL since mine may be comparitively slow. So forget
+the multiclass log loss branch.
+
 From ian goodfellow on google groups, there are a few options:
 
 -Write a TrainExtension that adds one by calling Monitor.add_channel
@@ -2265,23 +2269,34 @@ The metric is negative the log likelihood of the model
 
 Oh well. I learned a great deal about Theano, at least.
 
-
-
 *** Issues
 One of the problems here is GPU processing is only working
 with 32 bit values.
 
-
+** DONE Note
+   CLOSED: [2015-02-21 Sat 22:53]
+   :LOGBOOK:  
+   - State "DONE"       from ""           [2015-02-21 Sat 22:53]
+   :END:      
+   - some NLL and MLL are same thing
+   - but my NLL score on data is much better than my
+     submission
+   - indicates overfitting
+   - image augmentation will help, along with the CNN
 ** NEXT [#A] Make the workflow better
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-17 Tue 22:47]
    :END:      
-   - use % locals() in ipynb for yaml updates?
-   - a class, or an ipynb
-   - yaml
-   - model
-   - predict
-   - save predictions
+Expiriments are defined with yaml.
+I run the yaml in an ipython notebook.
+
+The best and last model are saved.
+Load up the best model and run the predictions.
+
+Can I move these notebooks to a new directory?
+Where are paths ill coded? 
+Data path is hard coded, doesn't matter relative to ipynb paths.
+
 ** TODO [#B] Get running on GPU/desktop
    -
 ** TODO [#B] Data augmentation
