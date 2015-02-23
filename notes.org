@@ -2299,7 +2299,7 @@ Can I move these notebooks to a new directory?
 Where are paths ill coded? 
 Data path is hard coded, doesn't matter relative to ipynb paths.
 
-** NEXT [#A] Get running on GPU/desktop
+** NEXT [#A] Get running on GPU/desktop [1/2]
    :LOGBOOK:  
    - State "NEXT"       from "TODO"       [2015-02-22 Sun 00:36]
    :END:      
@@ -2310,6 +2310,11 @@ Data path is hard coded, doesn't matter relative to ipynb paths.
    - ssh data over
    - ssh theano config over, add gpu
 
+*** DONE Move existing work over
+    CLOSED: [2015-02-22 Sun 17:34]
+    :LOGBOOK:  
+    - State "DONE"       from ""           [2015-02-22 Sun 17:34]
+    :END:      
 #+begin_src sh :noeval
 mkproject -p /usr/bin/python2.7 2014-12-20_datascibowl
 #+end_src
@@ -2336,6 +2341,133 @@ scp -r competition_data jotham@192.168.0.13:/home/jotham/projects/2014-12-20_dat
 scp ~/.theanorc jotham@192.168.0.13:/home/jotham/.theanorc
 #+end_src
 
+#+begin_src sh :noeval
+git clone git@github.com:jo-tham/pylearn2.git pylearn2_fork
+cd pylearn2_fork 
+python setyp.py develop
+#+end_src
+
+*** WAITING Setup theano with CUDA for gpu computing
+    :LOGBOOK:  
+    - State "WAITING"    from ""           [2015-02-22 Sun 19:58] \\
+      - waiting for new kernel/nvidia drivers
+      - until then, cpu only
+    :END:      
+The guide is [[http://deeplearning.net/software/theano/install.html#gpu-linux][here]]. Rough steps are as follows.
+
+CUDA, nvidia's proprietary gear for general purpose
+computing on GPUs, ships with nvidia.
+
+#+begin_src sh :results verbatim code replace output 
+pacman -Qs nvidia
+#+end_src
+#+RESULTS:
+#+BEGIN_SRC sh
+local/libcl 1.1-4
+    OpenCL library and ICD loader from NVIDIA
+local/libvdpau 0.9-1
+    Nvidia VDPAU library
+local/nvidia 346.35-6
+    NVIDIA drivers for linux
+local/nvidia-libgl 346.35-2
+    NVIDIA drivers libraries symlinks
+local/nvidia-utils 346.35-2
+    NVIDIA drivers utilities
+#+END_SRC
+
+We also need the cuda toolkit
+
+#+begin_src sh :noeval
+sudo pacman -S cuda
+#+end_src
+
+Cuda installs all components in the directory ~/opt/cuda~.
+To compile CUDA code, add ~/opt/cuda/include~ to the
+include path in the compiler instructions. 
+Knowing this we can update ~.theanorc~.
+
+#+begin_src sh :results verbatim code replace output 
+cat ~/.theanorc
+#+end_src
+#+RESULTS:
+#+BEGIN_SRC sh
+[global]
+exception_verbosity = high
+optimizer = fast_compile
+device = gpu0
+floatX = float32
+
+[cuda]
+root = /opt/cuda
+#+END_SRC
+
+I tried this test of the theano authors, but it failed
+#+begin_src python :noeval
+from theano import function, config, shared, sandbox
+import theano.tensor as T
+import numpy
+import time
+
+vlen = 10 * 30 * 768  # 10 x #cores x # threads per core
+iters = 1000
+
+rng = numpy.random.RandomState(22)
+x = shared(numpy.asarray(rng.rand(vlen), config.floatX))
+f = function([], T.exp(x))
+print f.maker.fgraph.toposort()
+t0 = time.time()
+for i in xrange(iters):
+    r = f()
+t1 = time.time()
+print 'Looping %d times took' % iters, t1 - t0, 'seconds'
+print 'Result is', r
+if numpy.any([isinstance(x.op, T.Elemwise) for x in f.maker.fgraph.toposort()]):
+    print 'Used the cpu'
+else:
+    print 'Used the gpu'
+#+end_src
+
+#+begin_src sh :results verbatim code replace output
+python theano_gpu_test.py
+# WARNING (theano.sandbox.cuda): CUDA is installed, but
+# device gpu is not available (error: Unable to get the
+# number of gpus available: unknown error)
+#+end_src
+
+#+begin_src sh :results verbatim code replace output
+nvidia-smi
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC sh
+Sun Feb 22 18:06:24 2015       
++------------------------------------------------------+                       
+| NVIDIA-SMI 346.35     Driver Version: 346.35         |                       
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GeForce GTX 550 Ti  Off  | 0000:01:00.0     N/A |                  N/A |
+| 15%   38C    P8    N/A /  N/A |    131MiB /  1023MiB |     N/A      Default |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID  Type  Process name                               Usage      |
+|=============================================================================|
+|    0              C   Not Supported                                         |
++-----------------------------------------------------------------------------+
+#+END_SRC
+
+A similar problem is reported on the [[https://groups.google.com/forum/#!msg/theano-users/xW9jmHzOwp0/8SvMA_R0EAUJ][google groups]]. 
+
+I tried running ~nvidia-smi~ as sudo to [[modules][initialize the
+device files]]. Things still didn't work.
+
+Well, it turns out the nvidia driver 346.35 may have some
+[[https://www.google.ca/search?q=nvidia+driver+346.35+linu+kernel+3.18.2&ie=utf-8&oe=utf-8&gws_rd=cr&ei=pnnqVJejGYiyyAT9hoCADw][issues with current kernel]]
+
+CURSES!
 
 ** TODO [#B] Data augmentation
    -
