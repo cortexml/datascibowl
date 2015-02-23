@@ -11,3 +11,4 @@ pylearn*
 /ipynb_tests/submission_softreg_shuf_ctr_sgd_best_06.csv.gz
 /ipynb_work/test_data_centered.npy
 /ipynb_tests/test_data_centered.npy
+/theano_gpu_test.pyc

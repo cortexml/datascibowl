@@ -2299,7 +2299,7 @@ Can I move these notebooks to a new directory?
 Where are paths ill coded? 
 Data path is hard coded, doesn't matter relative to ipynb paths.
 
-** NEXT [#A] Get running on GPU/desktop [1/2]
+** NEXT [#A] Get running on GPU/desktop [2/3]
    :LOGBOOK:  
    - State "NEXT"       from "TODO"       [2015-02-22 Sun 00:36]
    :END:      
@@ -2346,9 +2346,11 @@ git clone git@github.com:jo-tham/pylearn2.git pylearn2_fork
 cd pylearn2_fork 
 python setyp.py develop
 #+end_src
-
-*** WAITING Setup theano with CUDA for gpu computing
+*** DONE Setup theano with CUDA for gpu computing
+    CLOSED: [2015-02-22 Sun 21:06]
     :LOGBOOK:  
+    - State "DONE"       from "NEXT"       [2015-02-22 Sun 21:06]
+    - State "NEXT"       from "WAITING"    [2015-02-22 Sun 21:06]
     - State "WAITING"    from ""           [2015-02-22 Sun 19:58] \\
       - waiting for new kernel/nvidia drivers
       - until then, cpu only
@@ -2468,6 +2470,41 @@ Well, it turns out the nvidia driver 346.35 may have some
 [[https://www.google.ca/search?q=nvidia+driver+346.35+linu+kernel+3.18.2&ie=utf-8&oe=utf-8&gws_rd=cr&ei=pnnqVJejGYiyyAT9hoCADw][issues with current kernel]]
 
 CURSES!
+
+With a reboot, it pretends to be working, but appears to use
+the CPU anyway. WTH?@!
+
+#+begin_src 
+Using gpu device 0: GeForce GTX 550 Ti
+[HostFromGpu(<CudaNdarrayType(float32, vector)>), Elemwise{exp,no_inplace}(HostFromGpu.0)]
+Looping 1000 times took 5.19549107552 seconds
+Result is [ 1.23178029  1.61879337  1.52278066 ...,  2.20771813  2.29967761
+  1.62323284]
+Used the cpu
+#+end_src
+
+So I try running theano's test suite in
+[[file:ipynb_tests/theano_gpu.ipynb]]
+
+Those tests [[http://comments.gmane.org/gmane.comp.mathematics.theano.user/3521][should be run with cpu]].
+
+also, 
+
+#+begin_src sh :noeval
+pip install pycuda
+#+end_src
+
+Im at my ends. Why didn't the wee test with GPU work?
+
+Enough, I just try the softmax_03 with gpu. The cpu load is 100%...
+
+This is not working...
+
+*** NEXT Troubleshoot theano on gpu
+    :LOGBOOK:  
+    - State "NEXT"       from ""           [2015-02-22 Sun 21:06]
+    :END:      
+    - 
 
 ** TODO [#B] Data augmentation
    -
