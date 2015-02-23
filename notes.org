@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [15/27]
+* TODO Blog topics/Notes [15/30]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -2504,9 +2504,38 @@ This is not working...
     :LOGBOOK:  
     - State "NEXT"       from ""           [2015-02-22 Sun 21:06]
     :END:      
-    - 
 
-** TODO [#B] Data augmentation
+Friggin laptop was faster, 400 instead of 600 seconds per
+epoch. Neeeeed GPU to work.
+
+** NEXT Test whole ipynb flow on desktop
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-22 Sun 21:17]
+   :END:      
+   - see ipynb_work
+#+begin_src sh :results verbatim code replace output 
+ls ipynb_work
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC sh
+softreg_shuf_ctr_sgd_06_complete.ipynb
+sr_train_06.yaml
+#+END_SRC
+
+** NEXT Don't hardcode path into datasetclass
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-22 Sun 21:21]
+   :END:      
+   - use pylearn_data_path
+** NEXT change MonitorBasedSaveBest to use nll
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-22 Sun 21:18]
+   :END:      
+** NEXT [#A] Data augmentation
+   :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2015-02-22 Sun 21:14]
+   :END:      
    -
 
 ** TODO [#B] Then simple BGD and SGD again on softmax again
