@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [15/30]
+* TODO Blog topics/Notes [18/34]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -2299,8 +2299,10 @@ Can I move these notebooks to a new directory?
 Where are paths ill coded? 
 Data path is hard coded, doesn't matter relative to ipynb paths.
 
-** NEXT [#A] Get running on GPU/desktop [2/3]
+** DONE Get running on GPU/desktop [3/3]
+   CLOSED: [2015-02-23 Mon 21:20]
    :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-02-23 Mon 21:20]
    - State "NEXT"       from "TODO"       [2015-02-22 Sun 00:36]
    :END:      
    - create venv
@@ -2499,19 +2501,697 @@ Im at my ends. Why didn't the wee test with GPU work?
 Enough, I just try the softmax_03 with gpu. The cpu load is 100%...
 
 This is not working...
-
-*** NEXT Troubleshoot theano on gpu
+*** DONE Troubleshoot theano on gpu
+    CLOSED: [2015-02-23 Mon 21:20]
     :LOGBOOK:  
+    - State "DONE"       from "NEXT"       [2015-02-23 Mon 21:20]
     - State "NEXT"       from ""           [2015-02-22 Sun 21:06]
     :END:      
 
-Friggin laptop was faster, 400 instead of 600 seconds per
-epoch. Neeeeed GPU to work.
+OK, I tried tons of stuff. In the end, with [[https://groups.google.com/forum/#!searchin/theano-users/gpu/theano-users/IJL7DIwKutQ/NLCKl_ORzCsJ ][this]] suggestion
+and forcing the device, things worked. Suspicious as to
+whether pylearn really using GPU. How to know?
 
-** NEXT Test whole ipynb flow on desktop
+
+
+Friggin laptop was faster, 400 instead of 600 seconds per
+epoch (although this may be due to it reverting to cpu when
+gpu computation doesn't work). Neeeeed GPU to work.
+
+#+begin_src sh :noeval
+export PATH=/opt/cuda/bin:$PATH
+export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
+cd /opt/cuda/bin
+install-samples.sh /opt/cuda/samples2
+cd /opt/cuda/samples2/...
+make
+#+end_src
+
+Several warnings like this:
+
+#+begin_src sh :noeval
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp bilateralFilter ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/bilateralFilter'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/imageDenoising'
+>>> WARNING - libGL.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libGLU.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libX11.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXi.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXmu.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - glu.h not found, refer to CUDA Samples release notes for how to find and install them. <<<
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o bmploader.o -c bmploader.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o imageDenoising.o -c imageDenoising.cu
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o imageDenoisingGL.o -c imageDenoisingGL.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o imageDenoising bmploader.o imageDenoising.o imageDenoisingGL.o -L../../common/lib/linux/x86_64 -lGL -lGLU -lX11 -lXi -lXmu -lglut -lGLEW
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp imageDenoising ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/imageDenoising'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/histogram'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/histogram'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/cudaDecodeGL'
+>>> WARNING - libGL.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libGLU.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libX11.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXi.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXmu.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - glu.h not found, refer to CUDA Samples release notes for how to find and install them. <<<
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=compute_11 -o FrameQueue.o -c FrameQueue.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=compute_11 -o ImageGL.o -c ImageGL.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=compute_11 -o VideoDecoder.o -c VideoDecoder.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=compute_11 -o VideoParser.o -c VideoParser.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=compute_11 -o VideoSource.o -c VideoSource.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=compute_11 -o cudaModuleMgr.o -c cudaModuleMgr.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=compute_11 -o cudaProcessFrame.o -c cudaProcessFrame.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=compute_11 -o videoDecodeGL.o -c videoDecodeGL.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -m64 -gencode arch=compute_11,code=compute_11 -o cudaDecodeGL FrameQueue.o ImageGL.o VideoDecoder.o VideoParser.o VideoSource.o cudaModuleMgr.o cudaProcessFrame.o videoDecodeGL.o -L../../common/lib/linux/x86_64 -lGL -lGLU -lX11 -lXi -lXmu -lglut -lGLEW -lcuda -lcudart -lnvcuvid
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp cudaDecodeGL ../../bin/x86_64/linux/release
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=compute_11 -o NV12ToARGB_drvapi64.ptx -ptx NV12ToARGB_drvapi.cu
+[@] mkdir -p data
+[@] cp -f NV12ToARGB_drvapi64.ptx ./data
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp -f NV12ToARGB_drvapi64.ptx ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/cudaDecodeGL'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/dct8x8'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/dct8x8'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/SobelFilter'
+>>> WARNING - libGL.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libGLU.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libX11.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXi.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXmu.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - glu.h not found, refer to CUDA Samples release notes for how to find and install them. <<<
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o SobelFilter.o -c SobelFilter.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o SobelFilter_kernels.o -c SobelFilter_kernels.cu
+[@] /opt/cuda/bin/nvcc -ccbin g++ -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o SobelFilter SobelFilter.o SobelFilter_kernels.o -L../../common/lib/linux/x86_64 -lGL -lGLU -lX11 -lXi -lXmu -lglut -lGLEW
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp SobelFilter ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/SobelFilter'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/stereoDisparity'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/stereoDisparity'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/convolutionTexture'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/convolutionTexture'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/dwtHaar1D'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/dwtHaar1D'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/recursiveGaussian'
+>>> WARNING - libGL.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libGLU.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libX11.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXi.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXmu.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - glu.h not found, refer to CUDA Samples release notes for how to find and install them. <<<
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o recursiveGaussian.o -c recursiveGaussian.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o recursiveGaussian_cuda.o -c recursiveGaussian_cuda.cu
+[@] /opt/cuda/bin/nvcc -ccbin g++ -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o recursiveGaussian recursiveGaussian.o recursiveGaussian_cuda.o -L../../common/lib/linux/x86_64 -lGL -lGLU -lX11 -lXi -lXmu -lglut -lGLEW
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp recursiveGaussian ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/recursiveGaussian'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/convolutionFFT2D'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/convolutionFFT2D'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/HSOpticalFlow'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/HSOpticalFlow'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/boxFilter'
+>>> WARNING - libGL.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libGLU.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libX11.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXi.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXmu.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - glu.h not found, refer to CUDA Samples release notes for how to find and install them. <<<
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o boxFilter.o -c boxFilter.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o boxFilter_cpu.o -c boxFilter_cpu.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o boxFilter_kernel.o -c boxFilter_kernel.cu
+[@] /opt/cuda/bin/nvcc -ccbin g++ -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o boxFilter boxFilter.o boxFilter_cpu.o boxFilter_kernel.o -L../../common/lib/linux/x86_64 -lGL -lGLU -lX11 -lXi -lXmu -lglut -lGLEW
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp boxFilter ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/boxFilter'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/convolutionSeparable'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/convolutionSeparable'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/dxtc'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/3_Imaging/dxtc'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/4_Finance/quasirandomGenerator'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/4_Finance/quasirandomGenerator'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/4_Finance/SobolQRNG'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/4_Finance/SobolQRNG'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/4_Finance/MonteCarloMultiGPU'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/4_Finance/MonteCarloMultiGPU'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/4_Finance/binomialOptions'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/4_Finance/binomialOptions'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/4_Finance/BlackScholes'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/4_Finance/BlackScholes'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/5_Simulations/particles'
+>>> WARNING - libGL.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libGLU.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libX11.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXi.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXmu.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - glu.h not found, refer to CUDA Samples release notes for how to find and install them. <<<
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o particleSystem.o -c particleSystem.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o particleSystem_cuda.o -c particleSystem_cuda.cu
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o particles.o -c particles.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o render_particles.o -c render_particles.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o shaders.o -c shaders.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o particles particleSystem.o particleSystem_cuda.o particles.o render_particles.o shaders.o -L../../common/lib/linux/x86_64 -lGL -lGLU -lX11 -lXi -lXmu -lglut -lGLEW
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp particles ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/5_Simulations/particles'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/5_Simulations/smokeParticles'
+>>> WARNING - libGL.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libGLU.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libX11.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXi.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXmu.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - glu.h not found, refer to CUDA Samples release notes for how to find and install them. <<<
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o GLSLProgram.o -c GLSLProgram.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o ParticleSystem.o -c ParticleSystem.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o ParticleSystem_cuda.o -c ParticleSystem_cuda.cu
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o SmokeRenderer.o -c SmokeRenderer.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o SmokeShaders.o -c SmokeShaders.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o framebufferObject.o -c framebufferObject.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o particleDemo.o -c particleDemo.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o renderbuffer.o -c renderbuffer.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o smokeParticles GLSLProgram.o ParticleSystem.o ParticleSystem_cuda.o SmokeRenderer.o SmokeShaders.o framebufferObject.o particleDemo.o renderbuffer.o -L../../common/lib/linux/x86_64 -lGL -lGLU -lX11 -lXi -lXmu -lglut -lGLEW
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp smokeParticles ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/5_Simulations/smokeParticles'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/5_Simulations/oceanFFT'
+>>> WARNING - libGL.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libGLU.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libX11.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXi.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXmu.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - glu.h not found, refer to CUDA Samples release notes for how to find and install them. <<<
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o oceanFFT.o -c oceanFFT.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o oceanFFT_kernel.o -c oceanFFT_kernel.cu
+[@] /opt/cuda/bin/nvcc -ccbin g++ -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o oceanFFT oceanFFT.o oceanFFT_kernel.o -L../../common/lib/linux/x86_64 -lGL -lGLU -lX11 -lXi -lXmu -lglut -lGLEW -lcufft
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp oceanFFT ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/5_Simulations/oceanFFT'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/5_Simulations/fluidsGL'
+>>> WARNING - libGL.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libGLU.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libX11.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXi.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXmu.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - glu.h not found, refer to CUDA Samples release notes for how to find and install them. <<<
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o fluidsGL.o -c fluidsGL.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o fluidsGL_kernels.o -c fluidsGL_kernels.cu
+[@] /opt/cuda/bin/nvcc -ccbin g++ -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o fluidsGL fluidsGL.o fluidsGL_kernels.o -L../../common/lib/linux/x86_64 -lGL -lGLU -lX11 -lXi -lXmu -lglut -lGLEW -lcufft
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp fluidsGL ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/5_Simulations/fluidsGL'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/5_Simulations/nbody'
+>>> WARNING - libGL.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libGLU.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libX11.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXi.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXmu.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - glu.h not found, refer to CUDA Samples release notes for how to find and install them. <<<
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -ftz=true -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o bodysystemcuda.o -c bodysystemcuda.cu
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -ftz=true -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o nbody.o -c nbody.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -ftz=true -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o render_particles.o -c render_particles.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o nbody bodysystemcuda.o nbody.o render_particles.o -L../../common/lib/linux/x86_64 -lGL -lGLU -lX11 -lXi -lXmu -lglut -lGLEW
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp nbody ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/5_Simulations/nbody'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/lineOfSight'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/lineOfSight'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/alignedTypes'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/alignedTypes'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/fastWalshTransform'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/fastWalshTransform'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/sortingNetworks'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/sortingNetworks'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/cdpQuadtree'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/cdpQuadtree'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/StreamPriorities'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/StreamPriorities'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/newdelete'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/newdelete'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/mergeSort'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/mergeSort'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/eigenvalues'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/eigenvalues'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/shfl_scan'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/shfl_scan'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/reduction'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/reduction'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/radixSortThrust'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/radixSortThrust'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/threadFenceReduction'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/threadFenceReduction'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/ptxjit'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/ptxjit'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/scan'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/scan'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/scalarProd'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/scalarProd'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/FDTD3d'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/FDTD3d'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/matrixMulDynlinkJIT'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/matrixMulDynlinkJIT'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/simpleHyperQ'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/simpleHyperQ'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/interval'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/interval'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/concurrentKernels'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/concurrentKernels'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/FunctionPointers'
+>>> WARNING - libGL.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libGLU.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libX11.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXi.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXmu.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - glu.h not found, refer to CUDA Samples release notes for how to find and install them. <<<
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o FunctionPointers.o -c FunctionPointers.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o FunctionPointers_kernels.o -c FunctionPointers_kernels.cu
+[@] /opt/cuda/bin/nvcc -ccbin g++ -m64 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o FunctionPointers FunctionPointers.o FunctionPointers_kernels.o -L../../common/lib/linux/x86_64 -lGL -lGLU -lX11 -lXi -lXmu -lglut -lGLEW
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp FunctionPointers ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/FunctionPointers'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/cdpBezierTessellation'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/cdpBezierTessellation'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/segmentationTreeThrust'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/segmentationTreeThrust'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/threadMigration'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/threadMigration'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/cdpAdvancedQuicksort'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/cdpAdvancedQuicksort'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/cdpLUDecomposition'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/cdpLUDecomposition'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/transpose'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/6_Advanced/transpose'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/imageSegmentationNPP'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/imageSegmentationNPP'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/simpleCUFFT_callback'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/simpleCUFFT_callback'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/conjugateGradient'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/conjugateGradient'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/freeImageInteropNPP'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/freeImageInteropNPP'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/MC_EstimatePiQ'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/MC_EstimatePiQ'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/simpleCUFFT_2d_MGPU'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/simpleCUFFT_2d_MGPU'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/MersenneTwisterGP11213'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/MersenneTwisterGP11213'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/simpleCUFFT_MGPU'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/simpleCUFFT_MGPU'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/grabcutNPP'
+>>> WARNING - libGL.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libGLU.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libX11.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXi.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXmu.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - glu.h not found, refer to CUDA Samples release notes for how to find and install them. <<<
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -I../common/UtilNPP -I../common/FreeImage/include -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o GrabCut.o -c GrabCut.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -I../common/UtilNPP -I../common/FreeImage/include -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o GrabcutGMM.o -c GrabcutGMM.cu
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -I../common/UtilNPP -I../common/FreeImage/include -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o GrabcutHistogram.o -c GrabcutHistogram.cu
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -I../common/UtilNPP -I../common/FreeImage/include -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o GrabcutMain.o -c GrabcutMain.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -I../common/UtilNPP -I../common/FreeImage/include -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o GrabcutUtil.o -c GrabcutUtil.cu
+[@] /opt/cuda/bin/nvcc -ccbin g++ -m64 -gencode arch=compute_11,code=sm_11 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o grabcutNPP GrabCut.o GrabcutGMM.o GrabcutHistogram.o GrabcutMain.o GrabcutUtil.o -L../../common/lib/linux/x86_64 -lGL -lGLU -lX11 -lXi -lXmu -lglut -lGLEW -L../common/FreeImage/lib -L../common/FreeImage/lib/linux -L../common/FreeImage/lib/linux/x86_64 -lnppi -lnppc -lfreeimage
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp grabcutNPP ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/grabcutNPP'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/simpleCUFFT'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/simpleCUFFT'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/cuHook'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/cuHook'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/conjugateGradientUM'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/conjugateGradientUM'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/boxFilterNPP'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/boxFilterNPP'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/MC_EstimatePiInlineQ'
+"/opt/cuda"/bin/nvcc -ccbin g++ -I../../common/inc  -m64     -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o main.o -c src/main.cpp
+nvcc warning : The 'compute_11', 'compute_12', 'compute_13', 'sm_11', 'sm_12', and 'sm_13' architectures are deprecated, and may be removed in a future release.
+"/opt/cuda"/bin/nvcc -ccbin g++ -I../../common/inc  -m64     -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o piestimator.o -c src/piestimator.cu
+nvcc warning : The 'compute_11', 'compute_12', 'compute_13', 'sm_11', 'sm_12', and 'sm_13' architectures are deprecated, and may be removed in a future release.
+"/opt/cuda"/bin/nvcc -ccbin g++ -I../../common/inc  -m64     -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o test.o -c src/test.cpp
+nvcc warning : The 'compute_11', 'compute_12', 'compute_13', 'sm_11', 'sm_12', and 'sm_13' architectures are deprecated, and may be removed in a future release.
+"/opt/cuda"/bin/nvcc -ccbin g++   -m64       -gencode arch=compute_13,code=sm_13 -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52 -o MC_EstimatePiInlineQ main.o piestimator.o test.o  -lcurand
+nvcc warning : The 'compute_11', 'compute_12', 'compute_13', 'sm_11', 'sm_12', and 'sm_13' architectures are deprecated, and may be removed in a future release.
+mkdir -p ../../bin/x86_64/linux/release
+cp MC_EstimatePiInlineQ ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/MC_EstimatePiInlineQ'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/MC_SingleAsianOptionP'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/MC_SingleAsianOptionP'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/simpleDevLibCUBLAS'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/simpleDevLibCUBLAS'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/jpegNPP'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/jpegNPP'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/MC_EstimatePiInlineP'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/MC_EstimatePiInlineP'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/histEqualizationNPP'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/histEqualizationNPP'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/randomFog'
+>>> WARNING - libGL.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libGLU.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libX11.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXi.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - libXmu.so not found, refer to CUDA Samples release notes for how to find and install them. <<<
+>>> WARNING - glu.h not found, refer to CUDA Samples release notes for how to find and install them. <<<
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -Xcompiler -fpermissive -gencode arch=compute_11,code=compute_11 -o randomFog.o -c randomFog.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -I../../common/inc -m64 -Xcompiler -fpermissive -gencode arch=compute_11,code=compute_11 -o rng.o -c rng.cpp
+[@] /opt/cuda/bin/nvcc -ccbin g++ -m64 -gencode arch=compute_11,code=compute_11 -o randomFog randomFog.o rng.o -L../../common/lib/linux/x86_64 -lGL -lGLU -lX11 -lXi -lXmu -lglut -lGLEW -lcurand
+[@] mkdir -p ../../bin/x86_64/linux/release
+[@] cp randomFog ../../bin/x86_64/linux/release
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/randomFog'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/MC_EstimatePiP'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/MC_EstimatePiP'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/batchCUBLAS'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/batchCUBLAS'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/conjugateGradientPrecond'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/conjugateGradientPrecond'
+make[1]: Entering directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/simpleCUBLAS'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/opt/cuda/samples2/NVIDIA_CUDA-6.5_Samples/7_CUDALibraries/simpleCUBLAS'
+Finished building CUDA samples
+#+end_src
+
+
+I force the GPU, and it accepts
+#+begin_src sh :noeval
+THEANO_FLAGS=mode=FAST_RUN,device=gpu,floatX=float32,force_device=True python theano_gpu_test.py
+#Using gpu device 0: GeForce GTX 550 Ti
+#[GpuElemwise{exp,no_inplace}(<CudaNdarrayType(float32, vector)>), HostFromGpu(GpuElemwise{exp,no_inplace}.0)]
+#Looping 1000 times took 0.438356876373 seconds
+#Result is [ 1.23178029  1.61879349  1.52278066 ...,  2.20771813  2.29967761
+#  1.62323296]
+#Used the gpu
+#+end_src
+
+So I add that to my .theanorc and try fitting model
+
+Doesn't seem to work. Suuuper slow still. Could just be
+settings. See [[Tune GPU]].
+
+
+*** WTH . . . 
+    - So, theano is running on gpu using force flag
+    - Tiny bit of memory load, and when I try two processes
+      to use gpu I get this error
+
+#+begin_src 
+INFO (theano.gof.compilelock): Waiting for existing lock by process '9511' (I am process '7923')
+INFO:theano.gof.compilelock:Waiting for existing lock by process '9511' (I am process '7923')
+INFO (theano.gof.compilelock): To manually release the lock, delete /home/jotham/.theano/compiledir_Linux-3.18.6-1-ARCH-x86_64-with-glibc2.2.5--2.7.9-64/lock_dir
+INFO:theano.gof.compilelock:To manually release the lock, delete /home/jotham/.theano/compiledir_Linux-3.18.6-1-ARCH-x86_64-with-glibc2.2.5--2.7.9-64/lock_dir
+#+end_src
+
+    Theano tests ran with following output
+#+begin_src sh :noeval
+THEANO_FLAGS=mode=FAST_RUN,device=cpu,floatX=float32 python -c 'import theano; theano.test()' >> theano_test.txt
+#+end_src
+#+begin_src 
+THEANO_FLAGS=mode=FAST_RUN,device=cpu,floatX=float32 python -c 'import theano; theano.test()' >> theano_test.txt
+........................................E.............../home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/compile/tests/test_inplace_opt_for_value.py:170: UserWarning: theano modules are deprecated and will be removed in release 0.7
+  super(ExampleRNN, self).__init__()
+/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tensor/subtensor.py:110: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
+  start in [None, 0] or
+/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tensor/subtensor.py:114: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
+  stop in [None, length, maxsize] or
+...................................................................................................../home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/scan_module/scan_perform_ext.py:85: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility
+  from scan_perform.scan_perform import *
+................................................................................................................................................/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tensor/opt.py:2165: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
+  if (replace_x == replace_y and
+......................................EE..................................................................E............................./home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tensor/subtensor.py:190: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
+  if stop in [None, maxsize]:
+...........E..............E................................................/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/sparse/basic.py:87: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
+  return numpy.all(a == b)
+................./home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/scipy/sparse/data.py:63: ComplexWarning: Casting complex values to real discards the imaginary part
+  return self._with_data(self.data.astype(t))
+/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/sparse/tests/test_basic.py:2128: ComplexWarning: Casting complex values to real discards the imaginary part
+  expected = data.toarray().astype(o_dtype)
+...../home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/scipy/sparse/compressed.py:698: SparseEfficiencyWarning: Changing the sparsity structure of a csc_matrix is expensive. lil_matrix is more efficient.
+  SparseEfficiencyWarning)
+/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/scipy/sparse/compressed.py:698: SparseEfficiencyWarning: Changing the sparsity structure of a csr_matrix is expensive. lil_matrix is more efficient.
+  SparseEfficiencyWarning)
+...................................................................................................../home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tensor/subtensor.py:1469: UserWarning: DEPRECATION WARNING: AdvancedSubtensor1, you are using an old interface to the sparse grad. You should use theano.sparse_grad(a_tensor[an_int_vector]). 
+  "DEPRECATION WARNING: AdvancedSubtensor1, you are using"
+.................................................................................................................................................................................................................................INFO (theano.gof.compilelock): Waiting for existing lock by process '21429' (I am process '9511')
+INFO (theano.gof.compilelock): To manually release the lock, delete /home/jotham/.theano/compiledir_Linux-3.18.6-1-ARCH-x86_64-with-glibc2.2.5--2.7.9-64/lock_dir
+............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................E........................................................................................................................................................................................................................................................................................................................E..EEEE.E............/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/compile/function_module.py:579: ComplexWarning: Casting complex values to real discards the imaginary part
+  outputs = self.fn()
+....t......................................................E........................../home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tensor/tests/test_naacl09.py:69: UserWarning: RandomStreams is deprecated and will be removed in release 0.7. Use shared_randomstreams.RandomStreams or MRG_RandomStreams instead.
+  self.random = T.randomstreams.RandomStreams()
+E.....................................................................................................E......E.............................................................................................................................................../home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tensor/var.py:359: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
+  if arg != numpy.newaxis:
+......................................................................................................EE.............................................
+======================================================================
+ERROR: test_none (theano.compile.tests.test_function_module.T_function)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/compile/tests/test_function_module.py", line 42, in test_none
+    raise KnownFailureTest('See #254: Using None as function output leads to [] return value')
+KnownFailureTest: See #254: Using None as function output leads to [] return value
+
+======================================================================
+ERROR: test002_generator_one_scalar_output (theano.sandbox.scan_module.tests.test_scan.TestScan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/sandbox/scan_module/tests/test_scan.py", line 474, in test002_generator_one_scalar_output
+    raise KnownFailureTest('Work-in-progress sandbox ScanOp is not fully '
+KnownFailureTest: Work-in-progress sandbox ScanOp is not fully functional yet
+
+======================================================================
+ERROR: test003_one_sequence_one_output_and_weights (theano.sandbox.scan_module.tests.test_scan.TestScan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/sandbox/scan_module/tests/test_scan.py", line 512, in test003_one_sequence_one_output_and_weights
+    raise KnownFailureTest('Work-in-progress sandbox ScanOp is not fully '
+KnownFailureTest: Work-in-progress sandbox ScanOp is not fully functional yet
+
+======================================================================
+ERROR: test_alloc_inputs2 (theano.scan_module.tests.test_scan.T_Scan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/scan_module/tests/test_scan.py", line 2844, in test_alloc_inputs2
+    "This tests depends on an optimization for scan "
+KnownFailureTest: This tests depends on an optimization for scan that has not been implemented yet.
+
+======================================================================
+ERROR: test_infershape_seq_shorter_nsteps (theano.scan_module.tests.test_scan.T_Scan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/scan_module/tests/test_scan.py", line 3040, in test_infershape_seq_shorter_nsteps
+    raise KnownFailureTest('This is a generic problem with infershape'
+KnownFailureTest: This is a generic problem with infershape that has to be discussed and figured out
+
+======================================================================
+ERROR: test_outputs_info_not_typed (theano.scan_module.tests.test_scan.T_Scan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/numpy/testing/decorators.py", line 213, in knownfailer
+    raise KnownFailureTest(msg)
+KnownFailureTest: This test fails because not typed outputs_info are always gived the smallest dtype. There is no upcast of outputs_info in scan for now.
+
+======================================================================
+ERROR: test_arithmetic_cast (theano.tensor.tests.test_basic.test_arithmetic_cast)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tensor/tests/test_basic.py", line 5583, in test_arithmetic_cast
+    raise KnownFailureTest('Known issue with '
+KnownFailureTest: Known issue with numpy >= 1.6.x see #761
+
+======================================================================
+ERROR: test_abs_grad (theano.tensor.tests.test_complex.TestRealImag)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/numpy/testing/decorators.py", line 213, in knownfailer
+    raise KnownFailureTest(msg)
+KnownFailureTest: Complex grads not enabled, see #178
+
+======================================================================
+ERROR: test_complex_grads (theano.tensor.tests.test_complex.TestRealImag)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/numpy/testing/decorators.py", line 213, in knownfailer
+    raise KnownFailureTest(msg)
+KnownFailureTest: Complex grads not enabled, see #178
+
+======================================================================
+ERROR: test_mul_mixed (theano.tensor.tests.test_complex.TestRealImag)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/numpy/testing/decorators.py", line 213, in knownfailer
+    raise KnownFailureTest(msg)
+KnownFailureTest: Complex grads not enabled, see #178
+
+======================================================================
+ERROR: test_mul_mixed0 (theano.tensor.tests.test_complex.TestRealImag)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/numpy/testing/decorators.py", line 213, in knownfailer
+    raise KnownFailureTest(msg)
+KnownFailureTest: Complex grads not enabled, see #178
+
+======================================================================
+ERROR: test_mul_mixed1 (theano.tensor.tests.test_complex.TestRealImag)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/numpy/testing/decorators.py", line 213, in knownfailer
+    raise KnownFailureTest(msg)
+KnownFailureTest: Complex grads not enabled, see #178
+
+======================================================================
+ERROR: test_polar_grads (theano.tensor.tests.test_complex.TestRealImag)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/numpy/testing/decorators.py", line 213, in knownfailer
+    raise KnownFailureTest(msg)
+KnownFailureTest: Complex grads not enabled, see #178
+
+======================================================================
+ERROR: test_gradient (theano.tensor.tests.test_fourier.TestFourier)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/numpy/testing/decorators.py", line 213, in knownfailer
+    raise KnownFailureTest(msg)
+KnownFailureTest: Complex grads not enabled, see #178
+
+======================================================================
+ERROR: theano.tensor.tests.test_naacl09.test_naacl_model
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/nose/case.py", line 197, in runTest
+    self.test(*self.arg)
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tensor/tests/test_naacl09.py", line 613, in test_naacl_model
+    raise KnownFailureTest("Deprecated compile.module fails to "
+KnownFailureTest: Deprecated compile.module fails to give a sensible warning when updates to a variable have the wrong type
+
+======================================================================
+ERROR: theano.tensor.tests.test_opt.test_log_add
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/nose/case.py", line 197, in runTest
+    self.test(*self.arg)
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tensor/tests/test_opt.py", line 1508, in test_log_add
+    raise KnownFailureTest(('log(add(exp)) is not stabilized when adding '
+KnownFailureTest: log(add(exp)) is not stabilized when adding more than 2 elements, see #623
+
+======================================================================
+ERROR: Currently Theano enable the constant_folding optimization before stabilization optimization.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/nose/case.py", line 197, in runTest
+    self.test(*self.arg)
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tensor/tests/test_opt.py", line 3068, in test_constant_get_stabilized
+    "Theano optimizes constant before stabilization. "
+KnownFailureTest: Theano optimizes constant before stabilization. This breaks stabilization optimization in some cases. See #504.
+
+======================================================================
+ERROR: test_dot (theano.tests.test_rop.test_RopLop)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tests/test_rop.py", line 277, in test_dot
+    self.check_rop_lop(tensor.dot(self.x, W), self.in_shape)
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tests/test_rop.py", line 191, in check_rop_lop
+    raise KnownFailureTest("Rop doesn't handle non-differentiable "
+KnownFailureTest: Rop doesn't handle non-differentiable inputs correctly. Bug exposed by fixing Add.grad method.
+
+======================================================================
+ERROR: test_elemwise0 (theano.tests.test_rop.test_RopLop)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tests/test_rop.py", line 280, in test_elemwise0
+    self.check_rop_lop((self.x + 1) ** 2, self.in_shape)
+  File "/home/jotham/venvs/2014-12-20_datascibowl/lib/python2.7/site-packages/theano/tests/test_rop.py", line 191, in check_rop_lop
+    raise KnownFailureTest("Rop doesn't handle non-differentiable "
+KnownFailureTest: Rop doesn't handle non-differentiable inputs correctly. Bug exposed by fixing Add.grad method.
+
+----------------------------------------------------------------------
+Ran 2441 tests in 3104.784s
+
+#+end_src
+
+** WAITING Ask how to know if pylearn really using GPU?
    :LOGBOOK:  
+   - State "WAITING"    from "DONE"       [2015-02-23 Mon 22:03] \\
+     - see if anything
+   - State "DONE"       from ""           [2015-02-23 Mon 22:03]
+   :END:      
+   - could try a job with and without gpu flags
+
+** WAITING Run CNN mnist tutorial
+   :LOGBOOK:  
+   - State "WAITING"    from ""           [2015-02-23 Mon 22:05] \\
+     - running
+   :END:      
+** NEXT [#B] Tune GPU
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-23 Mon 22:05]
+   :END:      
+See [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/YzQ4S1agOCo/3o2pQHXfsp4J][this thread]]. And [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/DDLbwJLw69Y/mOKi6-XEY4wJ][that one]]. Finally, [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/yj3BoLlhouU/hq3H1ZXqdeIJ][this one]] may also
+help.
+
+** DONE Test whole ipynb flow on desktop
+   CLOSED: [2015-02-23 Mon 22:07]
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-02-23 Mon 22:07]
    - State "NEXT"       from ""           [2015-02-22 Sun 21:17]
    :END:      
+   - did this on softreg shuf_ctr_sgd_10
    - see ipynb_work
 #+begin_src sh :results verbatim code replace output 
 ls ipynb_work
@@ -2520,18 +3200,25 @@ ls ipynb_work
 #+RESULTS:
 #+BEGIN_SRC sh
 softreg_shuf_ctr_sgd_06_complete.ipynb
+softreg_shuf_ctr_sgd_10.ipynb
+softreg_shuf_ctr_sgd_bestnll_10.pkl
+softreg_shuf_ctr_sgd_last_10.pkl
 sr_train_06.yaml
+sr_train_10.yaml
 #+END_SRC
 
+** DONE change MonitorBasedSaveBest to use nll
+   CLOSED: [2015-02-23 Mon 22:08]
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-02-23 Mon 22:08]
+   - State "NEXT"       from ""           [2015-02-22 Sun 21:18]
+   :END:      
+   See [[Test whole ipynb flow on desktop]]
 ** NEXT Don't hardcode path into datasetclass
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-22 Sun 21:21]
    :END:      
    - use pylearn_data_path
-** NEXT change MonitorBasedSaveBest to use nll
-   :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-02-22 Sun 21:18]
-   :END:      
 ** NEXT [#A] Data augmentation
    :LOGBOOK:  
    - State "NEXT"       from "TODO"       [2015-02-22 Sun 21:14]
@@ -2718,6 +3405,8 @@ Monitoring step:
 	~misclass~
 	~nll~
 
+** TODO full batch size
+   -https://groups.google.com/forum/#!topic/pylearn-users/kM1PDr0jlm8
 ** TODO Fit more models/Combinations to try
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-15 Sun 22:14]

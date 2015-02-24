@@ -1,0 +1,40 @@
+!obj:pylearn2.train.Train {
+    dataset: &train !obj:pylearn2.datasets.datascibowl.DataSciBowl {
+        which_set: 'train',
+        start: 0,
+        stop: 25000,
+        shuffle: True,
+        center: True,
+    },
+    model: !obj:pylearn2.models.softmax_regression.SoftmaxRegression {
+        n_classes: 121,
+        irange: 0.,
+        nvis: 1024
+    },
+    algorithm: !obj:pylearn2.training_algorithms.sgd.SGD {
+        batch_size: 5000,
+        learning_rate: 0.01,
+        monitoring_dataset:
+            {
+                'train' : *train,
+                'valid' : !obj:pylearn2.datasets.datascibowl.DataSciBowl {
+                              which_set: 'train',
+                              start: 25000,
+                              stop:  30000,
+                              shuffle: True,
+                              center: True
+                          }
+            },
+        termination_criterion: !obj:pylearn2.termination_criteria.MonitorBased {
+            channel_name: "valid_y_nll"
+        }
+    },
+    extensions: [
+        !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
+             channel_name: 'valid_y_nll',
+             save_path: "softreg_shuf_ctr_sgd_bestnll_10.pkl"
+        }
+    ],
+    save_path: "softreg_shuf_ctr_sgd_last_10.pkl",
+    save_freq: 1
+}
