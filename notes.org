@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [18/34]
+* TODO Blog topics/Notes [20/34]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -3173,17 +3173,15 @@ Ran 2441 tests in 3104.784s
    :END:      
    - could try a job with and without gpu flags
 
-** WAITING Run CNN mnist tutorial
+** DONE Run CNN mnist tutorial
+   CLOSED: [2015-02-24 Tue 06:59]
    :LOGBOOK:  
+   - State "DONE"       from "WAITING"    [2015-02-24 Tue 06:59]
    - State "WAITING"    from ""           [2015-02-23 Mon 22:05] \\
      - running
    :END:      
-** NEXT [#B] Tune GPU
-   :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-02-23 Mon 22:05]
-   :END:      
-See [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/YzQ4S1agOCo/3o2pQHXfsp4J][this thread]]. And [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/DDLbwJLw69Y/mOKi6-XEY4wJ][that one]]. Finally, [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/yj3BoLlhouU/hq3H1ZXqdeIJ][this one]] may also
-help.
+   - power went out :(
+   - epochs were somewhat fast, however
 
 ** DONE Test whole ipynb flow on desktop
    CLOSED: [2015-02-23 Mon 22:07]
@@ -3214,8 +3212,10 @@ sr_train_10.yaml
    - State "NEXT"       from ""           [2015-02-22 Sun 21:18]
    :END:      
    See [[Test whole ipynb flow on desktop]]
-** NEXT Don't hardcode path into datasetclass
+** DONE Don't hardcode path into datasetclass
+   CLOSED: [2015-02-24 Tue 07:16]
    :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-02-24 Tue 07:16]
    - State "NEXT"       from ""           [2015-02-22 Sun 21:21]
    :END:      
    - use pylearn_data_path
@@ -3223,11 +3223,26 @@ sr_train_10.yaml
    :LOGBOOK:  
    - State "NEXT"       from "TODO"       [2015-02-22 Sun 21:14]
    :END:      
-   -
+   - https://github.com/benanne/kaggle-galaxies
 
 ** TODO [#B] Then simple BGD and SGD again on softmax again
    - using augmented data
    
+** TODO [#B] Tune GPU
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-23 Mon 22:05]
+   :END:      
+See [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/YzQ4S1agOCo/3o2pQHXfsp4J][this thread]]. And [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/DDLbwJLw69Y/mOKi6-XEY4wJ][that one]]. Finally, [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/yj3BoLlhouU/hq3H1ZXqdeIJ][this one]] may also
+help.
+
+Try adding this to .theanorc One, it will confirm that gpu
+is working. Two, it offers a speedup.
+
+#+begin_src 
+allow_gc = False
+#+end_src
+
+
 ** TODO [#B] How to implement CNN
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-16 Mon 11:46]
