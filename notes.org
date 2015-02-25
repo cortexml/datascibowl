@@ -3165,14 +3165,6 @@ Ran 2441 tests in 3104.784s
 
 #+end_src
 
-** WAITING Ask how to know if pylearn really using GPU?
-   :LOGBOOK:  
-   - State "WAITING"    from "DONE"       [2015-02-23 Mon 22:03] \\
-     - see if anything
-   - State "DONE"       from ""           [2015-02-23 Mon 22:03]
-   :END:      
-   - could try a job with and without gpu flags
-
 ** DONE Run CNN mnist tutorial
    CLOSED: [2015-02-24 Tue 06:59]
    :LOGBOOK:  
@@ -3219,7 +3211,7 @@ sr_train_10.yaml
    - State "NEXT"       from ""           [2015-02-22 Sun 21:21]
    :END:      
    - use pylearn_data_path
-** NEXT [#A] Data augmentation
+** NEXT [#A] Data augmentation - weekend
    :LOGBOOK:  
    - State "NEXT"       from "TODO"       [2015-02-22 Sun 21:14]
    :END:      
@@ -3228,28 +3220,26 @@ sr_train_10.yaml
 ** TODO [#B] Then simple BGD and SGD again on softmax again
    - using augmented data
    
-** TODO [#B] Tune GPU
+** WAITING Ask how to know if pylearn really using GPU?
    :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-02-23 Mon 22:05]
+   - State "WAITING"    from "DONE"       [2015-02-23 Mon 22:03] \\
+     - see if anything
+   - State "DONE"       from ""           [2015-02-23 Mon 22:03]
    :END:      
-See [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/YzQ4S1agOCo/3o2pQHXfsp4J][this thread]]. And [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/DDLbwJLw69Y/mOKi6-XEY4wJ][that one]]. Finally, [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/yj3BoLlhouU/hq3H1ZXqdeIJ][this one]] may also
-help.
+   - could try a job with and without gpu flags
 
-Try adding this to .theanorc One, it will confirm that gpu
-is working. Two, it offers a speedup.
-
-#+begin_src 
-allow_gc = False
-#+end_src
-
-
-** TODO [#B] How to implement CNN
+** NEXT [#A] Use CNN [1/2]
    :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2015-02-25 Wed 08:16]
    - State "NEXT"       from ""           [2015-02-16 Mon 11:46]
    :END:      
    - layers
    - [[http://www.cifasis-conicet.gov.ar/granitto/ECI2014/3.ApunteNeuralNetworks.pdf][some more tips and tricks]]
-*** first check out multilayer perceptrons
+*** DONE first check out multilayer perceptrons
+    CLOSED: [2015-02-25 Wed 08:19]
+    :LOGBOOK:  
+    - State "DONE"       from "TODO"       [2015-02-25 Wed 08:19]
+    :END:      
      - http://localhost:8888/notebooks/pylearn2_fork/pylearn2/scripts/tutorials/multilayer_perceptron/multilayer_perceptron.ipynb
      - The MLP makes a weak assumption on the model, that,
        generally speaking, the inputs map to outputs via the
@@ -3282,6 +3272,102 @@ allow_gc = False
                 ],
            nvis: 784,
        },
+
+     see
+     
+#+begin_src sh
+ls ipynb_work/*mlp*
+#+end_src
+
+#+RESULTS:
+: ipynb_work/mlp_01.yaml
+
+*** NEXT Fit a MLP
+    :LOGBOOK:  
+    - State "NEXT"       from ""           [2015-02-25 Wed 08:19]
+    :END:      
+Some new parameters to define
+
+Model MLP
+~layer_name~
+~dim~
+~sparse_init~
+~n_classes~
+~irange~
+
+Algorithm BGD
+~updates per batch~
+~conjugate~
+
+
+with an interlude for emacs greatness: this failed as there
+was tabs in the yaml. C-x h (highlight all) and M-x untabify
+<RET> to replace all tabs with whitespace.
+    
+#+begin_src sh :results verbatim code replace output
+cat ipynb_work/mlp_01.yaml
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC
+!obj:pylearn2.train.Train {
+    dataset: &train !obj:pylearn2.datasets.datascibowl.DataSciBowl {
+        which_set: 'train',
+        start: 0,
+        stop: 25000,
+        shuffle: True,
+        center: True,
+    },
+    model: !obj:pylearn2.models.mlp.MLP {
+        layers: [
+                 !obj:pylearn2.models.mlp.Sigmoid {
+                     layer_name: 'h0',
+                     dim: 500,
+                     sparse_init: 15,
+                 }, !obj:pylearn2.models.mlp.Softmax {
+                     layer_name: 'y',
+                     n_classes: 121,
+                     irange: 0.
+                 }
+                ],
+        nvis: 1024,
+    },
+    algorithm: !obj:pylearn2.training_algorithms.bgd.BGD {
+        batch_size: 5000,
+        line_search_mode: 'exhaustive',
+        conjugate: 1,
+        updates_per_batch: 10,
+        monitoring_dataset:
+            {
+                'train' : *train,
+                'valid' : !obj:pylearn2.datasets.datascibowl.DataSciBowl {
+                              which_set: 'train',
+                              start: 25000,
+                              stop:  30000,
+                              shuffle: True,
+                              center: True
+                          }
+            },
+        termination_criterion: !obj:pylearn2.termination_criteria.And {
+            criteria: [
+                !obj:pylearn2.termination_criteria.MonitorBased {
+                    channel_name: "valid_y_nll"
+                },
+                !obj:pylearn2.termination_criteria.EpochCounter {
+                    max_epochs: 10000
+                }
+            ]
+        }
+    },
+    extensions: [
+        !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
+             channel_name: 'valid_y_nll',
+             save_path: "mlp_01_best.pkl"
+        }
+    ],
+}
+#+END_SRC
+
 *** Research on CNN application
     See [[http://www.cs.toronto.edu/~fritz/absps/imagenet.pdf][krizhevsky et al]]
     - [[http://ufldl.stanford.edu/wiki/index.php/Softmax_Regression][Here]] is a good wiki on softmax
@@ -3321,6 +3407,22 @@ allow_gc = False
       refer to,
       - conv rectified layers are used
       - and 
+
+** TODO [#B] Tune GPU
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-23 Mon 22:05]
+   :END:      
+It seems slow with BGD but fast with SGD.
+
+See [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/YzQ4S1agOCo/3o2pQHXfsp4J][this thread]]. And [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/DDLbwJLw69Y/mOKi6-XEY4wJ][that one]]. Finally, [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/yj3BoLlhouU/hq3H1ZXqdeIJ][this one]] may also
+help.
+
+Try adding this to .theanorc One, it will confirm that gpu
+is working. Two, it offers a speedup.
+
+#+begin_src 
+allow_gc = False
+#+end_src
 
 ** TODO [#B] parameter tuning
    -
