@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [20/34]
+* TODO Blog topics/Notes [21/35]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -3219,16 +3219,19 @@ sr_train_10.yaml
 
 ** TODO [#B] Then simple BGD and SGD again on softmax again
    - using augmented data
+   - on laptop
    
-** WAITING Ask how to know if pylearn really using GPU?
+** DONE Ask how to know if pylearn really using GPU?
+   CLOSED: [2015-02-25 Wed 19:38]
    :LOGBOOK:  
+   - State "DONE"       from "WAITING"    [2015-02-25 Wed 19:38]
    - State "WAITING"    from "DONE"       [2015-02-23 Mon 22:03] \\
      - see if anything
    - State "DONE"       from ""           [2015-02-23 Mon 22:03]
    :END:      
    - could try a job with and without gpu flags
-
-** NEXT [#A] Use CNN [1/2]
+   - https://groups.google.com/forum/#!topic/pylearn-users/aZ43lHLpDT0
+** NEXT [#A] Use CNN [3/4]
    :LOGBOOK:  
    - State "NEXT"       from "TODO"       [2015-02-25 Wed 08:16]
    - State "NEXT"       from ""           [2015-02-16 Mon 11:46]
@@ -3282,8 +3285,10 @@ ls ipynb_work/*mlp*
 #+RESULTS:
 : ipynb_work/mlp_01.yaml
 
-*** NEXT Fit a MLP
+*** DONE Fit a MLP
+    CLOSED: [2015-02-25 Wed 22:19]
     :LOGBOOK:  
+    - State "DONE"       from "NEXT"       [2015-02-25 Wed 22:19]
     - State "NEXT"       from ""           [2015-02-25 Wed 08:19]
     :END:      
 Some new parameters to define
@@ -3368,7 +3373,14 @@ cat ipynb_work/mlp_01.yaml
 }
 #+END_SRC
 
-*** Research on CNN application
+Score still bad, 8.xx. CNN should provide a substantial
+improvement.
+
+*** DONE Research on CNN application
+    CLOSED: [2015-02-25 Wed 19:38]
+    :LOGBOOK:  
+    - State "DONE"       from ""           [2015-02-25 Wed 19:38]
+    :END:      
     See [[http://www.cs.toronto.edu/~fritz/absps/imagenet.pdf][krizhevsky et al]]
     - [[http://ufldl.stanford.edu/wiki/index.php/Softmax_Regression][Here]] is a good wiki on softmax
       - it's use is for mutually exclusive multiclass problems
@@ -3391,7 +3403,11 @@ cat ipynb_work/mlp_01.yaml
        	descent with a batch size of 128 examples, momentum
        	of 0.9, and weight decay of 0.0005.
     - 
-*** then cnn
+
+*** NEXT then cnn
+    :LOGBOOK:  
+    - State "NEXT"       from ""           [2015-02-25 Wed 19:38]
+    :END:      
     - http://deeplearning.net/tutorial/lenet.html great explanation
     - http://localhost:8888/notebooks/pylearn2_fork/pylearn2/scripts/tutorials/convolutional_network/convolutional_network.ipynb
     - example settings
@@ -3408,6 +3424,13 @@ cat ipynb_work/mlp_01.yaml
       - conv rectified layers are used
       - and 
 
+#+begin_src sh :results verbatim code replace output 
+cat ipynb_work/cnn_01.yaml
+#+end_src
+
+** TODO [#B] Profile GPU
+   - [[http://www.google.com/url?q=http%3A%2F%2Fdeeplearning.net%2Fsoftware%2Ftheano%2Ftutorial%2Fprofiling.html%23tut-profiling&sa=D&sntz=1&usg=AFQjCNHl7kjDxkJo5OPK0LFWqlt7ESX2Rw][link]]
+
 ** TODO [#B] Tune GPU
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-23 Mon 22:05]
@@ -3417,12 +3440,20 @@ It seems slow with BGD but fast with SGD.
 See [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/YzQ4S1agOCo/3o2pQHXfsp4J][this thread]]. And [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/DDLbwJLw69Y/mOKi6-XEY4wJ][that one]]. Finally, [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/yj3BoLlhouU/hq3H1ZXqdeIJ][this one]] may also
 help.
 
-Try adding this to .theanorc One, it will confirm that gpu
+Get the bleeding edge theano.
+#+begin_src sh :noeval
+pip uninstall theano
+pip install --upgrade --no-deps git+git://github.com/Theano/Theano.git
+#+end_src
+
+Try adding this to .theanorc. It will confirm that gpu
 is working. Two, it offers a speedup.
 
 #+begin_src 
 allow_gc = False
 #+end_src
+
+Try ('c', 1, 0, 'b') axis order.
 
 ** TODO [#B] parameter tuning
    -
