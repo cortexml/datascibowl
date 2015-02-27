@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [21/35]
+* TODO Blog topics/Notes [21/39]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -3211,12 +3211,31 @@ sr_train_10.yaml
    - State "NEXT"       from ""           [2015-02-22 Sun 21:21]
    :END:      
    - use pylearn_data_path
-** NEXT [#A] Data augmentation - weekend
+** NEXT [#A] Data augmentation
    :LOGBOOK:  
    - State "NEXT"       from "TODO"       [2015-02-22 Sun 21:14]
    :END:      
    - https://github.com/benanne/kaggle-galaxies
-
+** NEXT Shuffle and subset image paths
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-27 Fri 15:15]
+   :END:      
+   - not images themselves/resulting array
+   - i.e. don't unnecessarily read too much in
+   - then can naively apply transformations
+   - if doing non orthogonal rotations, have to fill
+     introduced space with mean (for centred) or 0
+** NEXT Upsample the low rate classes
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-27 Fri 15:24]
+   :END:      
+   - classes with few samples should be resampled
+** NEXT Stratify the samples
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-27 Fri 15:23]
+   :END:      
+   - lets ahve a test/validation set which takes evently
+     from the classes
 ** TODO [#B] Then simple BGD and SGD again on softmax again
    - using augmented data
    - on laptop
