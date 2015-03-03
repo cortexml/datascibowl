@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [21/39]
+* TODO Blog topics/Notes [22/38]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -3250,8 +3250,10 @@ sr_train_10.yaml
    :END:      
    - could try a job with and without gpu flags
    - https://groups.google.com/forum/#!topic/pylearn-users/aZ43lHLpDT0
-** NEXT [#A] Use CNN [3/4]
+** DONE [#A] Use CNN [4/4]
+   CLOSED: [2015-03-02 Mon 19:44]
    :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-03-02 Mon 19:44]
    - State "NEXT"       from "TODO"       [2015-02-25 Wed 08:16]
    - State "NEXT"       from ""           [2015-02-16 Mon 11:46]
    :END:      
@@ -3423,8 +3425,10 @@ improvement.
        	of 0.9, and weight decay of 0.0005.
     - 
 
-*** NEXT then cnn
+*** DONE then cnn
+    CLOSED: [2015-03-02 Mon 19:44]
     :LOGBOOK:  
+    - State "DONE"       from "NEXT"       [2015-03-02 Mon 19:44]
     - State "NEXT"       from ""           [2015-02-25 Wed 19:38]
     :END:      
     - http://deeplearning.net/tutorial/lenet.html great explanation
@@ -3446,6 +3450,83 @@ improvement.
 #+begin_src sh :results verbatim code replace output 
 cat ipynb_work/cnn_01.yaml
 #+end_src
+
+** Predict CNN
+   - had issues with shape
+   - for some reason pdb.set_trace not working
+
+*** Check out google group
+From [[https://groups.google.com/forum/#!searchin/pylearn-users/predict/pylearn-users/D7vmzO_vxqo/baQo4pTZIToJ][here]]:
+:HIDDEN:
+According to your yaml the images are 48x48x1 so I think you
+just need use the command np.reshape(x, size=(B, 48, 48, 1),
+where B is the number of examples in the file, after the
+data has been loaded into x and before and before the line y
+= f(x).
+
+My data is already in the proper shape in the pickled file.
+I don't think this will help.
+:END:
+
+[[https://groups.google.com/forum/#!searchin/pylearn-users/predict/pylearn-users/wuT_2S3AGcs/6lqAvMi7FscJ][This]] sounds promising:
+:HIDDEN:
+Rather than calling f directly on x_test, I think you have
+to get the data be converted to the format expected by your
+model, which is some kind of masked array.
+
+The easiest way would probably be to have your test data in
+a Dataset object, like the training data is, and access
+batches of data through an iterator built by the dataset.
+
+For instance:
+
+#+begin_src python :noeval
+it = test_set.iterator(mode='sequential', batch_size=...,
+                       data_specs=(model.get_input_source(),
+                                   model.get_input_space()))
+
+y_pred = []
+for batch in it:
+  y_pred.extend(f(batch)) 
+#+end_src
+
+AND
+
+Please also check whether X is a tuple (most likely yes) or
+not. If yes, then you need to create function using this
+statement: f = theano.function(X, Y) - note the lack of
+brackets around X - it is a tuple already and contains two
+symbolic input variables required.
+
+Also you may use the following code to call the function:
+
+f(*test_set.iterator(mode='sequential', num_batches=1, 
+    data_specs=(model.get_input_space(), 
+    model.get_input_source())).next())[0]
+
+f will return tuple of (data,mask). mask will be all '1' and
+you probably don't need it.
+:END:
+
+[[https://groups.google.com/forum/#!searchin/pylearn-users/predict/pylearn-users/aPX4oIeottI/X4WctADcmYMJ][This]] shows a working example for predict with cnn:
+:HIDDEN:
+#+begin_src python :noeval
+    x= [[[[180.05], [80.5]]]] 
+    for layer in train.model.layers:
+        print("{0}:{1}".format(layer.layer_name, layer.get_param_values()))
+        X = layer.get_input_space().make_theano_batch()
+        Y = layer.fprop(X)
+        f = function([X], Y)
+        y = f(x)
+        print ("input:{0}".format(x))    
+        print ("output:{0}".format(y))    
+        x = y
+        print("---------------------------------------------------")
+
+#+end_src
+:END:
+
+[[https://groups.google.com/forum/#!searchin/pylearn-users/predict/pylearn-users/d2WUUdA2_go/G73pGmWqm38J][Also]], beware the batch size.
 
 ** TODO [#B] Profile GPU
    - [[http://www.google.com/url?q=http%3A%2F%2Fdeeplearning.net%2Fsoftware%2Ftheano%2Ftutorial%2Fprofiling.html%23tut-profiling&sa=D&sntz=1&usg=AFQjCNHl7kjDxkJo5OPK0LFWqlt7ESX2Rw][link]]
