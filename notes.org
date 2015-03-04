@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [22/38]
+* TODO Blog topics/Notes [22/40]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -3211,35 +3211,6 @@ sr_train_10.yaml
    - State "NEXT"       from ""           [2015-02-22 Sun 21:21]
    :END:      
    - use pylearn_data_path
-** NEXT [#A] Data augmentation
-   :LOGBOOK:  
-   - State "NEXT"       from "TODO"       [2015-02-22 Sun 21:14]
-   :END:      
-   - https://github.com/benanne/kaggle-galaxies
-** NEXT Shuffle and subset image paths
-   :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-02-27 Fri 15:15]
-   :END:      
-   - not images themselves/resulting array
-   - i.e. don't unnecessarily read too much in
-   - then can naively apply transformations
-   - if doing non orthogonal rotations, have to fill
-     introduced space with mean (for centred) or 0
-** NEXT Upsample the low rate classes
-   :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-02-27 Fri 15:24]
-   :END:      
-   - classes with few samples should be resampled
-** NEXT Stratify the samples
-   :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-02-27 Fri 15:23]
-   :END:      
-   - lets ahve a test/validation set which takes evently
-     from the classes
-** TODO [#B] Then simple BGD and SGD again on softmax again
-   - using augmented data
-   - on laptop
-   
 ** DONE Ask how to know if pylearn really using GPU?
    CLOSED: [2015-02-25 Wed 19:38]
    :LOGBOOK:  
@@ -3451,7 +3422,14 @@ improvement.
 cat ipynb_work/cnn_01.yaml
 #+end_src
 
-** Predict CNN
+** NEXT Predict MLP with argmax
+   :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2015-03-03 Tue 22:05]
+   :END:      
+   - classify and see score
+   - probably shitier
+
+** TODO Predict CNN
    - had issues with shape
    - for some reason pdb.set_trace not working
 
@@ -3508,6 +3486,15 @@ f will return tuple of (data,mask). mask will be all '1' and
 you probably don't need it.
 :END:
 
+X is not a tuple. 
+
+May need to try what he's suggested with the iterator. One
+thing to do is try predicting one image. It did work, see
+cnn_00_predict.
+
+So we can build a class similar to DataSciBowl which reads
+in the validation data and builds an iterator for it.
+
 [[https://groups.google.com/forum/#!searchin/pylearn-users/predict/pylearn-users/aPX4oIeottI/X4WctADcmYMJ][This]] shows a working example for predict with cnn:
 :HIDDEN:
 #+begin_src python :noeval
@@ -3528,10 +3515,37 @@ you probably don't need it.
 
 [[https://groups.google.com/forum/#!searchin/pylearn-users/predict/pylearn-users/d2WUUdA2_go/G73pGmWqm38J][Also]], beware the batch size.
 
-** TODO [#B] Profile GPU
+** TODO [#A] Data augmentation
+   :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2015-02-22 Sun 21:14]
+   :END:      
+   - https://github.com/benanne/kaggle-galaxies
+** TODO Shuffle and subset image paths
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-27 Fri 15:15]
+   :END:      
+   - not images themselves/resulting array
+   - i.e. don't unnecessarily read too much in
+   - then can naively apply transformations
+   - if doing non orthogonal rotations, have to fill
+     introduced space with mean (for centred) or 0
+** TODO Stratify the samples
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-27 Fri 15:23]
+   :END:      
+   - lets ahve a test/validation set which takes evently
+     from the classes
+
+** TODO [#B] parameter tuning
+   -
+** TODO [#B] Then simple BGD and SGD again on softmax again
+   - using augmented data
+   - on laptop
+   
+** TODO [#C] Profile GPU
    - [[http://www.google.com/url?q=http%3A%2F%2Fdeeplearning.net%2Fsoftware%2Ftheano%2Ftutorial%2Fprofiling.html%23tut-profiling&sa=D&sntz=1&usg=AFQjCNHl7kjDxkJo5OPK0LFWqlt7ESX2Rw][link]]
 
-** TODO [#B] Tune GPU
+** TODO [#C] Tune GPU
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-23 Mon 22:05]
    :END:      
@@ -3554,9 +3568,6 @@ allow_gc = False
 #+end_src
 
 Try ('c', 1, 0, 'b') axis order.
-
-** TODO [#B] parameter tuning
-   -
 ** TODO [#C] other stopping riles
    - epochs
    - other monitor costs
@@ -3585,7 +3596,7 @@ Try ('c', 1, 0, 'b') axis order.
    :END:      
    - I thought softmax didn't learn 0 and 1 well, this
      should perform poorly
-** TODO [#C] Compare time to read images vs load h5 file
+** TODO Compare time to read images vs load h5 file
    - see [[Saving large pickle/h5]]
 ** [[http://daemonmaker.blogspot.ca/2014/10/a-first-experiment-with-pylearn2.html][Pylearn2 models]] and [[http://deeplearning.net/software/pylearn2/library/index.html#libdoc][official docs]]
    - algorithm
