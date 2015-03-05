@@ -801,7 +801,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [22/40]
+* TODO Blog topics/Notes [23/40]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -3422,14 +3422,11 @@ improvement.
 cat ipynb_work/cnn_01.yaml
 #+end_src
 
-** NEXT Predict MLP with argmax
+** DONE Predict CNN
+   CLOSED: [2015-03-04 Wed 22:45]
    :LOGBOOK:  
-   - State "NEXT"       from "TODO"       [2015-03-03 Tue 22:05]
+   - State "DONE"       from "TODO"       [2015-03-04 Wed 22:45]
    :END:      
-   - classify and see score
-   - probably shitier
-
-** TODO Predict CNN
    - had issues with shape
    - for some reason pdb.set_trace not working
 
@@ -3515,12 +3512,13 @@ in the validation data and builds an iterator for it.
 
 [[https://groups.google.com/forum/#!searchin/pylearn-users/predict/pylearn-users/d2WUUdA2_go/G73pGmWqm38J][Also]], beware the batch size.
 
-** TODO [#A] Data augmentation
+** NEXT [#A] Data augmentation
    :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2015-03-04 Wed 22:46]
    - State "NEXT"       from "TODO"       [2015-02-22 Sun 21:14]
    :END:      
    - https://github.com/benanne/kaggle-galaxies
-** TODO Shuffle and subset image paths
+** TODO [#B] Shuffle and subset image paths
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-27 Fri 15:15]
    :END:      
@@ -3529,16 +3527,28 @@ in the validation data and builds an iterator for it.
    - then can naively apply transformations
    - if doing non orthogonal rotations, have to fill
      introduced space with mean (for centred) or 0
-** TODO Stratify the samples
+** TODO Resample training set to even obs/class
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-27 Fri 15:23]
    :END:      
    - lets ahve a test/validation set which takes evently
      from the classes
+   - could use with berts random transformer to set number
+     of transformations to max(n_obs_class)
+   - but we really lose out with the random transformations,
+     well, i suppose it depends on structure of validation
+     set (i.e. what orientations are represented there
+     compared to training set)
 
+** TODO Prediction validation
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-03-04 Wed 22:51]
+   :END:      
+   - seeing large difference in scores on validation vs test
+     set. 
 ** TODO [#B] parameter tuning
    -
-** TODO [#B] Then simple BGD and SGD again on softmax again
+** TODO [#C] simple BGD and SGD again on softmax again
    - using augmented data
    - on laptop
    
@@ -3596,6 +3606,14 @@ Try ('c', 1, 0, 'b') axis order.
    :END:      
    - I thought softmax didn't learn 0 and 1 well, this
      should perform poorly
+** TODO Predict MLP with argmax
+   :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2015-03-03 Tue 22:05]
+   :END:      
+   - classify and see score
+   - probably shitier
+   - low priority, MLL/NLL penalizes for such boldness
+
 ** TODO Compare time to read images vs load h5 file
    - see [[Saving large pickle/h5]]
 ** [[http://daemonmaker.blogspot.ca/2014/10/a-first-experiment-with-pylearn2.html][Pylearn2 models]] and [[http://deeplearning.net/software/pylearn2/library/index.html#libdoc][official docs]]
