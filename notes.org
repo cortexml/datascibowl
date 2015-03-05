@@ -3512,7 +3512,55 @@ in the validation data and builds an iterator for it.
 
 [[https://groups.google.com/forum/#!searchin/pylearn-users/predict/pylearn-users/d2WUUdA2_go/G73pGmWqm38J][Also]], beware the batch size.
 
-** NEXT [#A] Data augmentation
+** NEXT [#A] Prediction validation
+   :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2015-03-04 Wed 23:06]
+   - State "NEXT"       from ""           [2015-03-04 Wed 22:51]
+   :END:      
+   - seeing large difference in scores on validation vs test
+     set.
+   - need to verify
+   - see [[https://www.kaggle.com/c/datasciencebowl/forums/t/12658/big-difference-between-logloss-on-validation-set-and-that-on-test-set][this thread]] on forums
+     - verify structure/transformations of inputs
+     - verify rows and columns of outputs
+   - 
+*** DONE output format
+    CLOSED: [2015-03-05 Thu 08:03]
+    :LOGBOOK:  
+    - State "DONE"       from ""           [2015-03-05 Thu 08:03]
+    :END:      
+    - the columns are ordered differently
+    - how does kaggle expect the data? in some type of order
+      or it uses column names? it says it uses column names,
+      so i should be ok there
+*** verify column names order corresponds to order of prediction
+    - My columns and the sample submission columns are in a
+      different order
+    - futhermore, my columns and the 'labels' as seen in
+      ipynb_tests/test_data_setup_for_pred are in a
+      different order
+    - where can I get the order of the classes in the model?
+    - in the datascibowl_reader util, i loop through the folders
+    - the folders have the following order based on the list
+      of folders
+'../data/datascibowl/train/euphausiids_young',
+'../data/datascibowl/train/hydromedusae_narcomedusae',
+'../data/datascibowl/train/copepod_calanoid_small_longantennae',
+'../data/datascibowl/train/appendicularian_s_shape',
+'../data/datascibowl/train/decapods',
+
+    - whereas my predictions do not
+    - In fact, in test_data_setup_for_pred alone I can see
+      that the order of the predictions is different than
+      that of the labels
+
+    - is the order of the list preserved through pickling
+      and unpickling?
+      - apparently
+    - is the order preserved in the prediction script?
+      - let's check
+
+** TODO [#A] Data augmentation
    :LOGBOOK:  
    - State "NEXT"       from "TODO"       [2015-03-04 Wed 22:46]
    - State "NEXT"       from "TODO"       [2015-02-22 Sun 21:14]
@@ -3540,12 +3588,6 @@ in the validation data and builds an iterator for it.
      set (i.e. what orientations are represented there
      compared to training set)
 
-** TODO Prediction validation
-   :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-03-04 Wed 22:51]
-   :END:      
-   - seeing large difference in scores on validation vs test
-     set. 
 ** TODO [#B] parameter tuning
    -
 ** TODO [#C] simple BGD and SGD again on softmax again
