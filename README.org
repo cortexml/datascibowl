@@ -16,8 +16,7 @@ The contents of this project are something like this:
 ls -l
 #+end_src
 
-#+RESULTS:
-#+begin_src sh :noeval
+#+begin_src
 total 252
 drwxr-xr-x 4 jotham users   4096 Feb 24 07:01 data
 -rw-r--r-- 1 jotham users    117 Feb 22 17:10 data_download.txt
@@ -44,8 +43,7 @@ pylearn. E.g.
 find ./data -maxdepth 2 -type d -ls
 #+end_src
 
-#+RESULTS:
-#+BEGIN_SRC sh
+#+BEGIN_SRC
 524382    4 drwxr-xr-x   4 jotham   users        4096 Feb 24 07:01 ./data
 1183533    4 drwxr-xr-x   4 jotham   users        4096 Feb 24 07:02 ./data/datascibowl
 1451882    4 drwxr-xr-x 123 jotham   users        4096 Feb 22 17:25 ./data/datascibowl/train
@@ -73,7 +71,6 @@ Required packages are in ~requirements.txt~.
 cat requirements.txt
 #+end_src
 
-#+RESULTS:
 #+BEGIN_SRC
 Cython==0.22
 Jinja2==2.7.3
