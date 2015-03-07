@@ -70,7 +70,7 @@ creating data directory and download file list
     libary documentation
 
 
-* TODO Python/Dev Stuff [8/9]
+* TODO Python/Dev Stuff [8/10]
 ** DONE Setup packages
    CLOSED: [2014-12-24 Wed 13:45]
    :LOGBOOK:  
@@ -362,11 +362,15 @@ set(['you', 'crisp', 'greedo?', "why'd"])
    :END:      
    - did an online python tutorial
    - dont even remember why!
-** NEXT [[https://wiki.python.org/moin/Generators][generators]]
+   
+** NEXT [#A] Iterators
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-03-07 Sat 13:04]
+   :END:      
+** NEXT [#B] [[https://wiki.python.org/moin/Generators][generators]]
    :LOGBOOK:  
    - State "NEXT"       from "TODO"       [2015-01-09 Fri 21:21]
    :END:      
-   
 ** learn key python packages [2/6]
    :LOGBOOK:  
    - State "DONE"       from ""           [2015-02-15 Sun 19:40]
@@ -801,7 +805,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [23/40]
+* TODO Blog topics/Notes [24/41]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -3221,7 +3225,7 @@ sr_train_10.yaml
    :END:      
    - could try a job with and without gpu flags
    - https://groups.google.com/forum/#!topic/pylearn-users/aZ43lHLpDT0
-** DONE [#A] Use CNN [4/4]
+** DONE Use CNN [4/4]
    CLOSED: [2015-03-02 Mon 19:44]
    :LOGBOOK:  
    - State "DONE"       from "NEXT"       [2015-03-02 Mon 19:44]
@@ -3512,8 +3516,10 @@ in the validation data and builds an iterator for it.
 
 [[https://groups.google.com/forum/#!searchin/pylearn-users/predict/pylearn-users/d2WUUdA2_go/G73pGmWqm38J][Also]], beware the batch size.
 
-** NEXT [#A] Prediction validation
+** DONE [#A] Prediction validation
+   CLOSED: [2015-03-07 Sat 13:13]
    :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-03-07 Sat 13:13]
    - State "NEXT"       from "TODO"       [2015-03-04 Wed 23:06]
    - State "NEXT"       from ""           [2015-03-04 Wed 22:51]
    :END:      
@@ -3533,7 +3539,11 @@ in the validation data and builds an iterator for it.
     - how does kaggle expect the data? in some type of order
       or it uses column names? it says it uses column names,
       so i should be ok there
-*** verify column names order corresponds to order of prediction
+*** DONE verify column names order corresponds to order of prediction
+    CLOSED: [2015-03-07 Sat 12:58]
+    :LOGBOOK:  
+    - State "DONE"       from ""           [2015-03-07 Sat 12:58]
+    :END:      
     - My columns and the sample submission columns are in a
       different order
     - futhermore, my columns and the 'labels' as seen in
@@ -3560,23 +3570,25 @@ in the validation data and builds an iterator for it.
     - is the order preserved in the prediction script?
       - let's check
 
-** TODO [#A] Data augmentation
+    - somehow it wasn't! see the comparison in cnn_00_predict
+*** DONE verify row names
+    CLOSED: [2015-03-07 Sat 12:58]
+    :LOGBOOK:  
+    - State "DONE"       from ""           [2015-03-07 Sat 12:58]
+    :END:      
+    - also didn't match
+    - how did this happen
+
+** NEXT [#A] Data augmentation
    :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2015-03-07 Sat 13:23]
    - State "NEXT"       from "TODO"       [2015-03-04 Wed 22:46]
    - State "NEXT"       from "TODO"       [2015-02-22 Sun 21:14]
    :END:      
    - https://github.com/benanne/kaggle-galaxies
-** TODO [#B] Shuffle and subset image paths
+** NEXT [#A] Resample training set to even obs/class
    :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-02-27 Fri 15:15]
-   :END:      
-   - not images themselves/resulting array
-   - i.e. don't unnecessarily read too much in
-   - then can naively apply transformations
-   - if doing non orthogonal rotations, have to fill
-     introduced space with mean (for centred) or 0
-** TODO Resample training set to even obs/class
-   :LOGBOOK:  
+   - State "NEXT"       from "TODO"       [2015-03-07 Sat 13:23]
    - State "NEXT"       from ""           [2015-02-27 Fri 15:23]
    :END:      
    - lets ahve a test/validation set which takes evently
@@ -3587,6 +3599,15 @@ in the validation data and builds an iterator for it.
      well, i suppose it depends on structure of validation
      set (i.e. what orientations are represented there
      compared to training set)
+** TODO [#B] Shuffle and subset image paths
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-02-27 Fri 15:15]
+   :END:      
+   - not images themselves/resulting array
+   - i.e. don't unnecessarily read too much in
+   - then can naively apply transformations
+   - if doing non orthogonal rotations, have to fill
+     introduced space with mean (for centred) or 0
 
 ** TODO [#B] parameter tuning
    -
@@ -3623,10 +3644,6 @@ Try ('c', 1, 0, 'b') axis order.
 ** TODO [#C] other stopping riles
    - epochs
    - other monitor costs
-** TODO [#C] Even obs per class?
-   :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-02-16 Mon 11:41]
-   :END:      
 ** TODO [#C] Remove the unnecessary reshapes
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-16 Mon 10:06]
@@ -3648,6 +3665,11 @@ Try ('c', 1, 0, 'b') axis order.
    :END:      
    - I thought softmax didn't learn 0 and 1 well, this
      should perform poorly
+** TODO [#A] Validate the process for generating validation image and column labels
+   - somehow things got fucked up in the original data
+     prediction
+   - better investigate that failure to know how to avoid it
+     next time
 ** TODO Predict MLP with argmax
    :LOGBOOK:  
    - State "NEXT"       from "TODO"       [2015-03-03 Tue 22:05]
