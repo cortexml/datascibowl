@@ -805,7 +805,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [24/41]
+* TODO Blog topics/Notes [28/44]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -3579,26 +3579,116 @@ in the validation data and builds an iterator for it.
     - also didn't match
     - how did this happen
 
-** NEXT [#A] Data augmentation
+** DONE [#A] Dropout/maxout research
+   CLOSED: [2015-03-08 Sun 15:34]
    :LOGBOOK:  
-   - State "NEXT"       from "TODO"       [2015-03-07 Sat 13:23]
-   - State "NEXT"       from "TODO"       [2015-03-04 Wed 22:46]
-   - State "NEXT"       from "TODO"       [2015-02-22 Sun 21:14]
+   - State "DONE"       from "NEXT"       [2015-03-08 Sun 15:34]
+   - State "NEXT"       from "TODO"       [2015-03-08 Sun 15:28]
+   - State "NEXT"       from ""           [2015-03-07 Sat 13:49]
    :END:      
-   - https://github.com/benanne/kaggle-galaxies
-** NEXT [#A] Resample training set to even obs/class
+   - there's 2 places to see examples here
+     ~pylearn2/scripts/papers/maxout|dropout~
+     see also, [[https://github.com/lisa-lab/pylearn2/tree/master/pylearn2/scripts/papers/maxout][maxout]], and [[https://github.com/lisa-lab/pylearn2/tree/master/pylearn2/scripts/papers/dropout][dropout]] examples
+   - maxout is a model layer
+   - dropout is a cost function, when used on a layer it is
+     [[https://groups.google.com/forum/#!searchin/pylearn-users/dropout/pylearn-users/sT8efiUCMwY/mdlY0rAxPZsJ][applied everywhere]]
+   - maxout (at least in 2013) only worked with SGD algorithm
+
+   - Geoff Hinton, who came up multiple times at a dinner
+     last night where 4/7 attendees were practicing machine
+     learning, authored the widely recognized [[http://arxiv.org/pdf/1207.0580v1.pdf][paper on
+     dropout]]. 
+   - In simple terms, this prevents overfitting by omitting
+     hidden features with probability 0.5 and some observed
+     elements in each training case. The results is similar
+     to averaging models over random samples of the
+     observations, while requiring less resources to fit
+     many models.
+   - [[http://deeplearning.net/software/pylearn2/library/costs.html#module-pylearn2.costs.mlp.dropout][pylearn2.costs.mlp.dropout]]
+
+   - dropout performs better under some constraints, which
+     [[http://arxiv.org/pdf/1302.4389v4.pdf][maxout takes advantage of]], as found by Goodfellow et
+     al
+   - [[http://deeplearning.net/software/pylearn2/library/models.html#pylearn2.models.maxout.Maxout][pylearn2.models.maxout.Maxout]]
+     - a hidden layer which does max pooling over groups of
+       linear units
+   - [[http://deeplearning.net/software/pylearn2/library/models.html#pylearn2.models.maxout.MaxoutConvC01B][pylearn2.models.maxout.MaxoutConvC01B]]
+   - [[http://deeplearning.net/software/pylearn2/library/models.html#pylearn2.models.maxout.MaxoutLocalC01B][pylearn2.models.maxout.MaxoutLocalC01B]]
+
+** DONE Research Learning rate/momentum
+   CLOSED: [2015-03-08 Sun 18:20]
    :LOGBOOK:  
-   - State "NEXT"       from "TODO"       [2015-03-07 Sat 13:23]
-   - State "NEXT"       from ""           [2015-02-27 Fri 15:23]
+   - State "DONE"       from ""           [2015-03-08 Sun 18:20]
    :END:      
-   - lets ahve a test/validation set which takes evently
-     from the classes
-   - could use with berts random transformer to set number
-     of transformations to max(n_obs_class)
-   - but we really lose out with the random transformations,
-     well, i suppose it depends on structure of validation
-     set (i.e. what orientations are represented there
-     compared to training set)
+   - [[http://www.willamette.edu/~gorr/classes/cs449/momrate.html][here's]] a good overview
+   - learning rate is the size of the jump taken in the
+     parameter space and momentum accelerates the learning
+     rate when the previous change in the weight update was
+     in the same direction
+   - as for the actual values, grid search? some standard?
+     Something for another day.
+** DONE Update theano
+   CLOSED: [2015-03-08 Sun 18:21]
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-03-08 Sun 18:21]
+   - State "NEXT"       from ""           [2015-03-08 Sun 15:55]
+   :END:      
+   - /home/jotham/projects/2014-12-20_datascibowl/pylearn2_fork/pylearn2/sandbox/cuda_convnet/__init__.py:66:
+     UserWarning: You are using probably a too old Theano
+     version. That will cause compilation crash. If so,
+     update Theano.
+** NEXT Run with dropout/maxout
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-03-08 Sun 15:55]
+   :END:      
+** TODO Improve sample [0/4]
+*** NEXT [#A] Data augmentation
+    :LOGBOOK:  
+    - State "NEXT"       from "TODO"       [2015-03-07 Sat 13:23]
+    - State "NEXT"       from "TODO"       [2015-03-04 Wed 22:46]
+    - State "NEXT"       from "TODO"       [2015-02-22 Sun 21:14]
+    :END:      
+    - https://github.com/benanne/kaggle-galaxies
+*** NEXT [#A] Resample training set to even obs/class
+    :LOGBOOK:  
+    - State "NEXT"       from "TODO"       [2015-03-07 Sat 13:23]
+    - State "NEXT"       from ""           [2015-02-27 Fri 15:23]
+    :END:      
+    - lets ahve a test/validation set which takes evently
+      from the classes
+    - could use with berts random transformer to set number
+      of transformations to max(n_obs_class)
+    - but we really lose out with the random transformations,
+      well, i suppose it depends on structure of validation
+      set (i.e. what orientations are represented there
+      compared to training set)
+*** NEXT use larger images while we're at it, 48x48
+    :LOGBOOK:  
+    - State "NEXT"       from ""           [2015-03-07 Sat 13:47]
+    :END:      
+*** NEXT Rough planning
+    :LOGBOOK:  
+    - State "NEXT"       from ""           [2015-03-08 Sun 11:52]
+    :END:      
+    - we have the reader
+    - the datascibowl class
+      - add argument augment
+    - in reader, if augment
+    - if, for each image, we want to transform it what is needed?
+      - the number of transformations to do -> 
+
+** DONE Continue learning
+   CLOSED: [2015-03-08 Sun 18:24]
+   :LOGBOOK:  
+   - State "DONE"       from "TODO"       [2015-03-08 Sun 18:24]
+   :END:      
+   - furthermore, I see that the maxout examples use
+     continued learning, what is this?
+   - ah, i think it's used for if you want to interrupt
+     learning or just after the stopping criterion is
+     reached, this can be invoked to decide if learning
+     should, guess ... continue!
+
 ** TODO [#B] Shuffle and subset image paths
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-27 Fri 15:15]
@@ -3611,39 +3701,10 @@ in the validation data and builds an iterator for it.
 
 ** TODO [#B] parameter tuning
    -
-** TODO [#C] simple BGD and SGD again on softmax again
-   - using augmented data
-   - on laptop
    
 ** TODO [#C] Profile GPU
    - [[http://www.google.com/url?q=http%3A%2F%2Fdeeplearning.net%2Fsoftware%2Ftheano%2Ftutorial%2Fprofiling.html%23tut-profiling&sa=D&sntz=1&usg=AFQjCNHl7kjDxkJo5OPK0LFWqlt7ESX2Rw][link]]
 
-** TODO [#C] Tune GPU
-   :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-02-23 Mon 22:05]
-   :END:      
-It seems slow with BGD but fast with SGD.
-
-See [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/YzQ4S1agOCo/3o2pQHXfsp4J][this thread]]. And [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/DDLbwJLw69Y/mOKi6-XEY4wJ][that one]]. Finally, [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/yj3BoLlhouU/hq3H1ZXqdeIJ][this one]] may also
-help.
-
-Get the bleeding edge theano.
-#+begin_src sh :noeval
-pip uninstall theano
-pip install --upgrade --no-deps git+git://github.com/Theano/Theano.git
-#+end_src
-
-Try adding this to .theanorc. It will confirm that gpu
-is working. Two, it offers a speedup.
-
-#+begin_src 
-allow_gc = False
-#+end_src
-
-Try ('c', 1, 0, 'b') axis order.
-** TODO [#C] other stopping riles
-   - epochs
-   - other monitor costs
 ** TODO [#C] Remove the unnecessary reshapes
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-16 Mon 10:06]
@@ -3659,7 +3720,7 @@ Try ('c', 1, 0, 'b') axis order.
      | B | B | B |
      ?
 
-** TODO [#C] Thresholded observations?
+** TODO [#C] Threshold observations?
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-16 Mon 11:11]
    :END:      
@@ -3670,6 +3731,12 @@ Try ('c', 1, 0, 'b') axis order.
      prediction
    - better investigate that failure to know how to avoid it
      next time
+** TODO simple BGD and SGD again on softmax again
+   - using augmented data
+   - on laptop
+** TODO other stopping riles
+   - epochs
+   - other monitor costs
 ** TODO Predict MLP with argmax
    :LOGBOOK:  
    - State "NEXT"       from "TODO"       [2015-03-03 Tue 22:05]
@@ -3757,3 +3824,53 @@ Monitoring step:
    - model
    - algorithm
    - data augmentation
+
+** CANCELLED [#C] Tune GPU
+   :LOGBOOK:  
+   - State "CANCELLED"  from "TODO"       [2015-03-08 Sun 18:26] \\
+     - got bleeding edge theano and performance satisfactory
+   - State "NEXT"       from ""           [2015-02-23 Mon 22:05]
+   :END:      
+It seems slow with BGD but fast with SGD.
+
+See [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/YzQ4S1agOCo/3o2pQHXfsp4J][this thread]]. And [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/DDLbwJLw69Y/mOKi6-XEY4wJ][that one]]. Finally, [[https://groups.google.com/forum/#!searchin/pylearn-users/GPU/pylearn-users/yj3BoLlhouU/hq3H1ZXqdeIJ][this one]] may also
+help.
+
+Get the bleeding edge theano.
+#+begin_src sh :noeval
+pip uninstall theano
+pip install --upgrade --no-deps git+git://github.com/Theano/Theano.git
+#+end_src
+
+Try adding this to .theanorc. It will confirm that gpu
+is working. Two, it offers a speedup.
+
+#+begin_src 
+allow_gc = False
+#+end_src
+
+Try ('c', 1, 0, 'b') axis order.
+
+* Post competition
+** Setup a few python dev env things for emacs
+   - consider making it extensible to remote machines with
+     just shell access
+http://emacswiki.org/emacs/PythonProgrammingInEmacs
+https://www.youtube.com/watch?v=0cZ7szFuz18
+https://github.com/AndreaCrotti/minimal-emacs-configuration
+
+cusedit
+ido mode
+windowmove key bindings shift
+
+yasnippet snippets for classes, r functions, for example
+
+also very much need the package which fixes the
+custom-set-variable bullshit
+
+
+* Misc Learned
+** Pushing to different remotes with magit
+   - ~C-u C-u P P~
+
+
