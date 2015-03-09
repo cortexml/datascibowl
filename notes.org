@@ -805,7 +805,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [28/44]
+* TODO Blog topics/Notes [29/45]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -3637,8 +3637,10 @@ in the validation data and builds an iterator for it.
      UserWarning: You are using probably a too old Theano
      version. That will cause compilation crash. If so,
      update Theano.
-** NEXT Run with dropout/maxout
+** DONE Run with dropout/maxout
+   CLOSED: [2015-03-08 Sun 20:27]
    :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-03-08 Sun 20:27]
    - State "NEXT"       from ""           [2015-03-08 Sun 15:55]
    :END:      
 ** TODO Improve sample [0/4]
@@ -3675,7 +3677,11 @@ in the validation data and builds an iterator for it.
       - add argument augment
     - in reader, if augment
     - if, for each image, we want to transform it what is needed?
-      - the number of transformations to do -> 
+      - the number of transformations to do ->
+
+    - ...
+
+    - it's on paper. see the commit.
 
 ** DONE Continue learning
    CLOSED: [2015-03-08 Sun 18:24]
@@ -3689,6 +3695,13 @@ in the validation data and builds an iterator for it.
      reached, this can be invoked to decide if learning
      should, guess ... continue!
 
+** NEXT retry prediction on whole test set
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-03-08 Sun 20:26]
+   :END:      
+   - with theano RC
+   - otherwise, use iterator with larger pred batches, cause
+     the individual is so slow
 ** TODO [#B] Shuffle and subset image paths
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-02-27 Fri 15:15]
