@@ -805,7 +805,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [29/45]
+* TODO Blog topics/Notes [30/49]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -3643,16 +3643,16 @@ in the validation data and builds an iterator for it.
    - State "DONE"       from "NEXT"       [2015-03-08 Sun 20:27]
    - State "NEXT"       from ""           [2015-03-08 Sun 15:55]
    :END:      
-** TODO Improve sample [0/4]
-*** NEXT [#A] Data augmentation
+** DONE Improve sample/Augmentation [1/4]
+   CLOSED: [2015-03-10 Tue 22:35]
+   :LOGBOOK:  
+   - State "DONE"       from "TODO"       [2015-03-10 Tue 22:35]
+   :END:      
+   - see 4.1 in [[http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf][krizhevsky et al]]
+*** DONE [#A] Resample training set to even obs/class
+    CLOSED: [2015-03-10 Tue 22:35]
     :LOGBOOK:  
-    - State "NEXT"       from "TODO"       [2015-03-07 Sat 13:23]
-    - State "NEXT"       from "TODO"       [2015-03-04 Wed 22:46]
-    - State "NEXT"       from "TODO"       [2015-02-22 Sun 21:14]
-    :END:      
-    - https://github.com/benanne/kaggle-galaxies
-*** NEXT [#A] Resample training set to even obs/class
-    :LOGBOOK:  
+    - State "DONE"       from "NEXT"       [2015-03-10 Tue 22:35]
     - State "NEXT"       from "TODO"       [2015-03-07 Sat 13:23]
     - State "NEXT"       from ""           [2015-02-27 Fri 15:23]
     :END:      
@@ -3664,25 +3664,12 @@ in the validation data and builds an iterator for it.
       well, i suppose it depends on structure of validation
       set (i.e. what orientations are represented there
       compared to training set)
-*** NEXT use larger images while we're at it, 48x48
+*** CANCELLED use larger images while we're at it, 48x48
     :LOGBOOK:  
+    - State "CANCELLED"  from "NEXT"       [2015-03-10 Tue 22:35]
     - State "NEXT"       from ""           [2015-03-07 Sat 13:47]
     :END:      
-*** NEXT Rough planning
-    :LOGBOOK:  
-    - State "NEXT"       from ""           [2015-03-08 Sun 11:52]
-    :END:      
-    - we have the reader
-    - the datascibowl class
-      - add argument augment
-    - in reader, if augment
-    - if, for each image, we want to transform it what is needed?
-      - the number of transformations to do ->
-
-    - ...
-
-    - it's on paper. see the commit.
-
+    - waiting, didnt offer much improvement when maxout used
 ** DONE Continue learning
    CLOSED: [2015-03-08 Sun 18:24]
    :LOGBOOK:  
@@ -3695,6 +3682,28 @@ in the validation data and builds an iterator for it.
      reached, this can be invoked to decide if learning
      should, guess ... continue!
 
+** NEXT split into training and sample before augment
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-03-10 Tue 23:05]
+   :END:      
+   - 
+** NEXT Try transformations without class balancing
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-03-10 Tue 23:07]
+   :END:      
+   - [[https://www.kaggle.com/c/datasciencebowl/forums/t/12585/how-do-you-deal-with-the-class-unbalance-for-your-cnn-model][see here]], class balancing may be problematic
+     
+** NEXT online augmentation
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-03-10 Tue 23:07]
+   :END:      
+** NEXT Train model with augmentation
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-03-10 Tue 22:37]
+   :END:      
+   - may need to make some adjustments for memory usage
+     - validation set from original images only - not augmented?
+   - can we skip monitoring of the training set?
 ** NEXT retry prediction on whole test set
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-03-08 Sun 20:26]
@@ -3863,6 +3872,7 @@ allow_gc = False
 #+end_src
 
 Try ('c', 1, 0, 'b') axis order.
+
 
 * Post competition
 ** Setup a few python dev env things for emacs
