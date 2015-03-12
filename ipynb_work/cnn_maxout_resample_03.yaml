@@ -1,11 +1,15 @@
 !obj:pylearn2.train.Train {
-    dataset: &train !obj:pylearn2.datasets.datascibowl.DataSciBowl {
-        which_set: 'train',
-        start: 0,
-        stop: 215513,
-        shuffle: True,
-        center: True,
-        augment_factor: 1,
+    dataset: &train !obj: pylearn2.datasets.transformer_dataset.TransformerDataset {
+        raw: !obj:pylearn2.datasets.datascibowl.DataSciBowl {
+            which_set: 'train',
+            start: 0,
+            stop: 215513,
+            shuffle: True,
+            center: True,
+            },
+        transformer: !obj:pylearn2.datasets.datascibowl.MyBlock,
+        space_preserving: True,
+
     },
     model: !obj:pylearn2.models.mlp.MLP {
         batch_size: 100,
