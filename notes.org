@@ -805,7 +805,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [30/49]
+* TODO Blog topics/Notes [32/52]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -3682,6 +3682,30 @@ in the validation data and builds an iterator for it.
      reached, this can be invoked to decide if learning
      should, guess ... continue!
 
+** DONE try random transform via block and transformerdataset
+   CLOSED: [2015-03-12 Thu 06:15]
+   :LOGBOOK:  
+   - State "DONE"       from ""           [2015-03-12 Thu 06:15]
+   :END:      
+   - miserable score
+** DONE online augmentation
+   CLOSED: [2015-03-12 Thu 08:53]
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-03-12 Thu 08:53]
+   - State "NEXT"       from ""           [2015-03-10 Tue 23:07]
+   :END:      
+   - https://github.com/benanne/kaggle-galaxies/blob/master/realtime_augmentation.py
+   - see the commit
+** NEXT try just rotation; no translations
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-03-12 Thu 08:38]
+   :END:      
+   - 
+** NEXT try thr 3 orthogonal transform
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-03-12 Thu 08:53]
+   :END:      
+   - put in Datascibowl dataset class
 ** NEXT split into training and sample before augment
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-03-10 Tue 23:05]
@@ -3693,10 +3717,6 @@ in the validation data and builds an iterator for it.
    :END:      
    - [[https://www.kaggle.com/c/datasciencebowl/forums/t/12585/how-do-you-deal-with-the-class-unbalance-for-your-cnn-model][see here]], class balancing may be problematic
      
-** NEXT online augmentation
-   :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-03-10 Tue 23:07]
-   :END:      
 ** NEXT Train model with augmentation
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-03-10 Tue 22:37]
