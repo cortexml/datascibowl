@@ -805,7 +805,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [32/52]
+* TODO Blog topics/Notes [36/54]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -3696,27 +3696,52 @@ in the validation data and builds an iterator for it.
    :END:      
    - https://github.com/benanne/kaggle-galaxies/blob/master/realtime_augmentation.py
    - see the commit
-** NEXT try just rotation; no translations
+** DONE try just rotation; no translations
+   CLOSED: [2015-03-12 Thu 21:37]
    :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-03-12 Thu 21:37]
    - State "NEXT"       from ""           [2015-03-12 Thu 08:38]
    :END:      
-   - 
-** NEXT try thr 3 orthogonal transform
+   - i think i got this wrong
+   - removed the signal condition
+   - when i reran visualization in
+     random_transformation_tests_0 some of the images were just lack
+   - and even without translations, sometimes the shape was
+     pretty much absent from the image
+** DONE Try transformations without class balancing
+   CLOSED: [2015-03-12 Thu 21:39]
    :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-03-12 Thu 21:39]
+   - State "NEXT"       from ""           [2015-03-10 Tue 23:07]
+   :END:      
+   - [[https://www.kaggle.com/c/datasciencebowl/forums/t/12585/how-do-you-deal-with-the-class-unbalance-for-your-cnn-model][see here]], class balancing may be problematic
+     
+** DONE try random 90 deg warm online augmentation
+   CLOSED: [2015-03-12 Thu 23:43]
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-03-12 Thu 23:43]
+   - State "NEXT"       from ""           [2015-03-12 Thu 21:38]
+   :END:      
+   - keep the signal condition
+   - run the tests
+   - score still plummetter
+** DONE try thr 3 orthogonal transform
+   CLOSED: [2015-03-12 Thu 23:55]
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-03-12 Thu 23:55]
    - State "NEXT"       from ""           [2015-03-12 Thu 08:53]
    :END:      
    - put in Datascibowl dataset class
+   - the validation set score is extremely variable
+   - may have to relax the parameters slightly
+   - 7e14 after 4 eopchs
+   - WTF is that
+
 ** NEXT split into training and sample before augment
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-03-10 Tue 23:05]
    :END:      
    - 
-** NEXT Try transformations without class balancing
-   :LOGBOOK:  
-   - State "NEXT"       from ""           [2015-03-10 Tue 23:07]
-   :END:      
-   - [[https://www.kaggle.com/c/datasciencebowl/forums/t/12585/how-do-you-deal-with-the-class-unbalance-for-your-cnn-model][see here]], class balancing may be problematic
-     
 ** NEXT Train model with augmentation
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-03-10 Tue 22:37]
@@ -3773,6 +3798,7 @@ in the validation data and builds an iterator for it.
      prediction
    - better investigate that failure to know how to avoid it
      next time
+** TODO Review image proc [[http://scipy-lectures.github.io/packages/scikit-image/][presentation]]
 ** TODO simple BGD and SGD again on softmax again
    - using augmented data
    - on laptop
