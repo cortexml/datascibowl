@@ -805,7 +805,7 @@ can be made here.
 
 
 
-* TODO Blog topics/Notes [36/54]
+* TODO Blog topics/Notes [39/59]
 ** DONE pylearn 2 convolutional neural networks setup
    CLOSED: [2015-02-15 Sun 20:12]
    :LOGBOOK:  
@@ -3737,12 +3737,52 @@ in the validation data and builds an iterator for it.
    - 7e14 after 4 eopchs
    - WTF is that
 
+** DONE Verify the 3 orthogonal rotations
+   CLOSED: [2015-03-14 Sat 15:15]
+   :LOGBOOK:  
+   - State "DONE"       from ""           [2015-03-14 Sat 15:15]
+   :END:      
+   - see ipynb_test/datascibowlreader_vanilla_augmentation
+   - affine use radians, was assumin degrees
+   - it also requires some parameters other than rotate; i
+     made some naive assumptions about how it works
+** DONE Retry 3 orthogonal augmentations
+   CLOSED: [2015-03-14 Sat 19:50]
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-03-14 Sat 19:50]
+   - State "NEXT"       from ""           [2015-03-14 Sat 15:16]
+   :END:      
+   - still no good, even with the fix
+** NEXT Parameter research
+   :LOGBOOK:  
+   - State "NEXT"       from ""           [2015-03-14 Sat 22:31]
+   :END:      
+   - momentum and init
+     - http://www.cs.toronto.edu/~fritz/absps/momentum.pdf
+   - convolutional layers
+     - http://deeplearning.net/software/pylearn2/library/models.html#id10
+** Vincent Domulin's pylearn 2 blog posts
+   - http://vdumoulin.github.io/articles/pylearn2-jobman/
+   - http://vdumoulin.github.io/articles/extending-pylearn2/
+   - very useful way to move forward with pylearn 2
+** TODO parameter grid search, see pylearn2-jobman from domulin
+   - 
+
+** DONE [#A] Retry 3 orthogonl augment with different model
+   CLOSED: [2015-03-14 Sat 22:31]
+   :LOGBOOK:  
+   - State "DONE"       from "NEXT"       [2015-03-14 Sat 22:31]
+   - State "NEXT"       from "TODO"       [2015-03-14 Sat 19:50]
+   :END:      
+   - see cnn_maxout_augment_rotate_06.yaml
+     - increase batch size to 256 and learning rate to .05
+
 ** NEXT split into training and sample before augment
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-03-10 Tue 23:05]
    :END:      
    - 
-** NEXT Train model with augmentation
+** NEXT Train model with class balancing
    :LOGBOOK:  
    - State "NEXT"       from ""           [2015-03-10 Tue 22:37]
    :END:      
